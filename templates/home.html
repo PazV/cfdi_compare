@@ -1,5 +1,12 @@
 {% extends 'main_layout.html' %}
 {% block bodyContent %}
 {{ super()}}
-<h2>hello</h2>
+<div class="row">
+    <div class="col-sm-3" style="padding:0;">
+        {% include 'elements/_sidebar.html' %}
+    </div>
+    <div class="col-sm-9 working-panel">
+
+    </div>
+</div>
 {% endblock %}
