@@ -43,3 +43,9 @@
     color:#f1971d;
     text-decoration: none;
 }
+
+.dropright .dropdown-toggle::after{
+    float:right;
+    margin-top:0.5em;
+    vertical-align: baseline;
+}
