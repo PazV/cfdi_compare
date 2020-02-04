@@ -17,3 +17,7 @@ bp = Blueprint('home', __name__, url_prefix='/home')
 # @is_logged_in
 def home():
     return render_template('home.html',g=g)
+
+@bp.route('/2')
+def home2():
+    return render_template('home2.html',g=g)
