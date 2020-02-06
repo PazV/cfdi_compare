@@ -1,0 +1,29 @@
+.sidebar-li-elements{
+    padding:5px;
+    border-bottom: 1px solid #c1c1c1;
+}
+
+.sidebar-li-elements:hover{
+    background-color:white;
+    color:#f1971d;
+    border-color:#f1971d;
+    border-width:0 2.5px;
+    border-style:solid;
+}
+
+.sidebar-a-elements{
+    /* color:white; */
+    color:#c1c1c1;
+    display:block;
+}
+
+.sidebar-a-elements:hover{
+    color:#f1971d;
+    text-decoration: none;
+}
+
+.dropright .dropdown-toggle::after{
+    float:right;
+    margin-top:0.5em;
+    vertical-align: baseline;
+}

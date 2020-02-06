@@ -1,57 +1,40 @@
 /*b-o significa black-orange, que corresponde al tema para la aplicación*/
 
+html{
+    height: 100%;
+}
+
+body{
+    height: 100%;
+    width: 98%;
+}
+
 .topnavbar-style-b-o{
     border-bottom-color: #f1971d;
     border-bottom-width: 3px;
     border-bottom-style: solid;
 }
 
+
+.mytopnavbar{
+    position: fixed;
+    background-color: black;
+    height:50px;
+    width:100%;
+    display: flex;
+}
+
+
 .sidebar-style-b-o{
     background-color: #4a4a4a;
     height:-webkit-fill-available;
     width:100%;
-    padding:0;
+    /* padding:0; */
+    height: 99%;
     /* border-color: #f1971d;
     border-width: 0 2px;
     border-style: solid; */
 }
-
-.working-panel{
-    background-color: white;
-}
-
-.sidebar-li-elements{
-    padding:5px;
-    border-bottom: 1px solid #c1c1c1;
-}
-
-.sidebar-li-elements:hover{
-    background-color:white;
-    color:#f1971d;
-    border-color:#f1971d;
-    border-width:0 2.5px;
-    border-style:solid;
-}
-
-.sidebar-a-elements{
-    /* color:white; */
-    color:#c1c1c1;
-    display:block;
-}
-
-.sidebar-a-elements:hover{
-    color:#f1971d;
-    text-decoration: none;
-}
-
-.dropright .dropdown-toggle::after{
-    float:right;
-    margin-top:0.5em;
-    vertical-align: baseline;
-}
-
-
-/*----------------------------------------------------------------*/
 
 .sidebar-pt-a-elements{
     color:#efeee3;
@@ -59,6 +42,7 @@
     font-family: sans-serif;
     font-weight: bolder;
     font-size: medium;
+    font-size-adjust: 0.48;
     /* display: block; */
 }
 
@@ -99,7 +83,17 @@
 
 .sidebar-submenudiv-li{
     /* display:inline-grid; */
-    display:grid;    
+    display:grid;
+}
+
+.sidebar-div{
+    height:100%;
+    padding-right: 0;
+}
+
+.sidebar-logo{
+    width: 50%;
+    margin:auto;
 }
 
 .icon-right-arrow-menu{
@@ -107,4 +101,9 @@
     margin-top:1%;
     float:right;
     margin-right: 5px;
+}
+
+
+.working-panel{
+    background-color: white;
 }
