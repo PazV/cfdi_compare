@@ -1,0 +1,5 @@
+.default-user{
+    content:url('/static/images/default-user.png');
+    width:30px;
+    height:30px;
+}

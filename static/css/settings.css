@@ -1,0 +1,15 @@
+.div-company-filter{
+    margin-top:3%;
+    margin-left:1%;
+}
+
+.mod-header-title{
+    color: white;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.modal-header-footer{
+    padding:10px;
+    background-color:#dadada;
+}

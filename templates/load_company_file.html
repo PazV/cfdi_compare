@@ -1,0 +1,40 @@
+{% extends 'main_layout.html' %}
+{% block bodyContent %}
+{{ super()}}
+<div class="div-company-name">
+    <span class="spn-company-name">Empresa X SA de CV</span>
+</div>
+<div>
+    <span class="spn-action-title">Cargar archivo con información de la empresa</span>
+</div>
+<form>
+    <div class="form-group row form-load-files justify-content-center">
+        <label for="company_file_year" class="col-sm-1 col-form-label">Año: </label>
+        <div class="col-sm-3">
+            <select class="form-control">
+                <option>1999</option>
+                <option>2000</option>
+            </select>
+        </div>
+        <label for="company_file_month" class="col-sm-1 col-form-label">Mes: </label>
+        <div class="col-sm-3">
+            <select class="form-control">
+                <option>Enero</option>
+                <option>Febrero</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row form-load-files justify-content-center">
+        <div class="custom-file form-load-files load-file">
+            <input type="file" class="custom-file-input" id="company_file"/>
+            <label class="custom-file-label" for="company_file">Archivo: </label>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="margin-left:1%;" data-toggle="tooltip" title="Click para ver formato que debe tener el archivo a cargar"><i class="fas fa-question"></i></button>
+    </div>
+    <div class="form-group row form-load-files justify-content-end" style="max-width:85%;">
+        <button type="button" class="btn btn-outline-info" style="margin-right:3px;"><i class="fas fa-file-upload"></i> Cargar</button>
+        <button type="button" class="btn btn-outline-info"><i class="fas fa-times"></i> Cancelar</button>
+    </div>
+</form>
+
+{% endblock %}

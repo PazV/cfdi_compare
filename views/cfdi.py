@@ -1,6 +1,6 @@
 #--*-- coding: utf-8 --*--
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, Blueprint, g, send_file
-from passlib.hash import sha236_crypt
+from passlib.hash import sha256_crypt
 from functools import wraps
 from werkzeug.utils import secure_filename
 import logging
@@ -18,10 +18,30 @@ import zipfile
 # db = getDB()
 from flask import current_app as app
 # from . import general_functions
-GF = general_functions.GeneralFunctions()
+# GF = general_functions.GeneralFunctions()
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, Color, colors, PatternFill, Border, Alignment, Side, NamedStyle
 from openpyxl.cell import Cell
 from time import gmtime, strftime, localtime
 
 bp = Blueprint('cfdi', __name__, url_prefix='/cfdi' )
+
+@bp.route('/load-company-file')
+# @is_logged_in
+def loadCompanyFile():
+    return render_template('load_company_file.html',g=g)
+
+@bp.route('/load-sat-file')
+# @is_logged_in
+def loadSatFile():
+    return render_template('load_sat_file.html', g=g)
+
+@bp.route('/compare')
+# @is_logged_in
+def compareRecords():
+    return render_template('compare_records.html', g=g)
+
+@bp.route('/my-progress')
+# @is_logged_in
+def comparingProgress():
+    return render_template('comparing_progress.html', g=g)

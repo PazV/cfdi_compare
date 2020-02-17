@@ -1,0 +1,36 @@
+{% extends 'main_layout.html' %}
+{% block bodyContent %}
+{{ super () }}
+<div>
+    <form >
+        <div class="row form-group div-company-filter">
+            <label class="col-form-label col-sm-1" style="font-weight:bold;">Buscar: </label>
+            <div class="col-sm-5">
+                <input class="form-control" type="text"/>
+            </div>
+            <button class="btn btn-primary"><i class="fas fa-search"></i> Buscar</button>
+        </div>
+    </form>
+    <div class="table-responsive" style="padding:3%;">
+        <table class="table display">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>RFC</th>
+                    <th>Creada</th>
+                </tr>
+            </thead>
+            <tbody style="cursor:pointer;">
+
+            </tbody>
+        </table>
+    </div>
+    <div class="btn-toolbar float-right" role="toolbar">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-info" data-toggle="tooltip" title="Agregar empresa" id="btnAddCompany"><i class="fas fa-plus"></i> Agregar</button>
+            <button type="button" class="btn btn-outline-info" data-toggle="tooltip" title="Editar empresa"><i class="fas fa-edit"></i> Editar</button>
+            <button type="button" class="btn btn-outline-info" data-toggle="tooltip" title="Deshabilitar empresa"><i class="fas fa-ban"></i> Deshabilitar</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

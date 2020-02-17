@@ -13,4 +13,9 @@ $(document).ready(function(){
         $(this).siblings('a').children('i.icon-right-arrow-menu').css('transform','rotate(0deg');
     });
 
+    $(".close-modal").click(function(){
+        var mod_id = this.offsetParent.offsetParent.offsetParent.id;
+        $("#"+mod_id).modal("hide");
+    });
+
 });

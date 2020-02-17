@@ -1,0 +1,26 @@
+.carousel-item-size{
+    height: 250px;
+    /* width: 250px; */
+    display: block;
+    margin: auto;
+    padding-top:5%;
+}
+
+.div-companies-title{
+    margin-left:5%;
+    margin-top:2%;
+}
+
+.span-company-name{
+    color: white;
+    font-weight: bold;
+    font-size: large;
+    display: flex;
+    justify-content: center;
+}
+
+.carousel-image-align{
+    display: block;
+    /* margin: auto; */
+    width: 50%;
+}

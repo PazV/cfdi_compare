@@ -1,0 +1,37 @@
+.spn-company-name{
+    margin-left: 3%;
+    font-size: 1em;
+    font-family: sans-serif;
+    color: #f1982cbf;
+}
+
+.spn-action-title{
+    margin-left: 5%;
+    color: #383d41;
+    font-size: 1.5em;
+}
+
+.div-company-name{
+    border-bottom: double 3px #4949491c;
+    padding: 2px 5px;
+}
+
+.form-load-files{
+    padding:2%;
+}
+
+.row.form-load-files{
+    margin-right:0;
+}
+
+.load-file{
+    margin-left:2%;
+    width:60%;
+}
+
+@media screen and (max-width:575px){
+    .load-file{
+        margin-left:2%;
+        width:85%;
+    }
+}
