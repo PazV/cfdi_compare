@@ -13,9 +13,52 @@ $(document).ready(function(){
         $(this).siblings('a').children('i.icon-right-arrow-menu').css('transform','rotate(0deg');
     });
 
-    $(".close-modal").click(function(){
-        var mod_id = this.offsetParent.offsetParent.offsetParent.id;
-        $("#"+mod_id).modal("hide");
-    });
+    if (window.location.pathname.includes('/home')){
+        getHomeCompanies(1);
+    }
 
 });
+
+function getHomeCompanies(user_id){
+    var hex_colors=["#EC7063","#A569BD","#5499C7","#48C9B0","#52BE80","#F4D03F","#DC7633"];
+
+    $.ajax({
+        url:'/home/getHomeCompanies',
+        data:JSON.stringify({'user_id':user_id}),
+        type:'POST',
+        success:function(response){
+            try{
+                var res=JSON.parse(response);
+            }catch(err){
+                ajaxError();
+            }
+            if (res.success){
+                cont=0;
+                for (var x of res.data){
+                    var active="";
+                    if (cont==0){
+                        active='active';
+                    }
+                    $("#companies_carrousel_ol").append('<li data-target="#carouselCompanies" data-slide-to="'+cont+'" class="'+active+'"></li>')
+                    cont++;
+                    $("#companies_carousel_div_items").append('<div class="carousel-item '+active+'"><div class="carousel-item-size" style="background-color:'+hex_colors[cont]+';"><a href="/company/1" ><span class="span-company-name">'+x['name']+'</span></a><a href="/company/1"><img src="/static/images/building.png" width="200" height="200" class="carousel-image-align"/></a></div></div>');
+
+                }
+            }
+            else{
+                $.alert({
+                    theme:'dark',
+                    title:'Atención',
+                    content:res.msg_resonse
+                });
+            }
+        },
+        error:function(){
+            $.alert({
+                theme:'dark',
+                title:'Atención',
+                content:'Ocurrió un error, favor de intentarlo de nuevo.'
+            });
+        }
+    });
+}

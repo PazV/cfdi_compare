@@ -11,5 +11,31 @@
 
 .modal-header-footer{
     padding:10px;
-    background-color:#dadada;
+    background-color:#afafaf;
+}
+
+.spn-error-msg{
+    font-size:0.8em;
+    color:#d80d0d;
+}
+
+.no-space-div{
+    padding-bottom:3px;
+    margin-bottom:3px;
+}
+
+.hide-error{
+    display:none;
+}
+
+.show-error{
+    display:initial;
+}
+
+.invalid-field{
+    border:solid 1px red;
+}
+
+.valid-field{
+    border:solid 1px green;
 }

@@ -45,9 +45,11 @@ def create_app(test_config=None):
     app.register_blueprint(cfdi.bp)
     from views import settings
     app.register_blueprint(settings.bp)
+    from views import company
+    app.register_blueprint(company.bp)
 
-    app.add_url_rule('/', endpoint='home.home')
     app.add_url_rule('/home', endpoint='home.home')
+    app.add_url_rule('/', endpoint='home.home')
 
     return app
 

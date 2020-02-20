@@ -24,3 +24,19 @@
     /* margin: auto; */
     width: 50%;
 }
+
+.card-actions{
+    width: 8rem;
+    margin:10px 20px;
+}
+
+.card-img-size{
+    height: 100px;
+    margin: auto;
+    width: 80% !important;
+}
+
+.card-text-size{
+    font-size: 0.8em;
+    text-align:center;
+}

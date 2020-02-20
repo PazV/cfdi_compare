@@ -1,0 +1,53 @@
+{% extends 'main_layout.html' %}
+{% block bodyContent %}
+{{ super()}}
+<div class="div-company-name">
+    <span class="spn-company-name">Empresa X S.A. de C.V.</span>
+</div>
+<div style="padding:10px;">
+    <div class="row" style="padding:15px; margin:10px;">
+        <div class="card card-actions">
+            <img src="/static/images/upload-file.png" class="card-img-top card-img-size" alt="Archivo sat"/>
+            <div class="card-body" style="padding: 10px; display: grid; align-items: flex-start;">
+                <p class="card-text card-text-size">Realizar carga de archivo SAT</p>
+                <a href="/cfdi/load-sat-file" class="btn btn-primary" style="align-self: flex-end;">Ir</a>
+            </div>
+        </div>
+        <div class="card card-actions" >
+            <img src="/static/images/upload-file.png" class="card-img-top card-img-size" alt="Archivo sat" />
+            <div class="card-body" style="padding: 10px; display: grid; align-items: flex-start;">
+                <p class="card-text card-text-size">Hacer carga de archivo realizado por la empresa</p>
+                <a href="/cfdi/load-company-file" class="btn btn-primary" style="align-self: flex-end;">Ir</a>
+            </div>
+        </div>
+        <div class="card card-actions">
+            <img src="/static/images/compare-files.png" class="card-img-top card-img-size" alt="Archivo sat" />
+            <div class="card-body" style="padding: 10px; display: grid; align-items: flex-start;">
+                <p class="card-text card-text-size">Hacer comparativo de registros</p>
+                <a href="/cfdi/compare" class="btn btn-primary" style="align-self: flex-end;">Ir</a>
+            </div>
+        </div>
+        <div class="card card-actions">
+            <img src="/static/images/progress.png" class="card-img-top card-img-size" alt="Archivo sat"/>
+            <div class="card-body" style="padding: 10px; display: grid; align-items: flex-start;">
+                <p class="card-text card-text-size">Ver avance de los comparativos realizados</p>
+                <a href="/cfdi/my-progress" class="btn btn-primary" style="align-self: flex-end;">Ir</a>
+            </div>
+        </div>
+        <div class="card card-actions">
+            <img src="/static/images/download-file.png" class="card-img-top card-img-size" alt="Archivo sat"/>
+            <div class="card-body" style="padding: 10px; display: grid; align-items: flex-start;">
+                <p class="card-text card-text-size">Descargar formato para cargar información</p>
+                <a href="#" class="btn btn-primary" style="align-self: flex-end;">Ir</a>
+            </div>
+        </div>
+        <div class="card card-actions">
+            <img src="/static/images/download-file.png" class="card-img-top card-img-size" alt="Archivo sat"/>
+            <div class="card-body" style="padding: 10px; display: grid; align-items: flex-start;">
+                <p class="card-text card-text-size">Descargar guía de llenado</p>
+                <a href="#" class="btn btn-primary" style="align-self: flex-end;">Ir</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
