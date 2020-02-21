@@ -121,3 +121,38 @@ def getAllCompanies():
         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
         app.logger.info(traceback.format_exc(sys.exc_info()))
     return json.dumps(response)
+
+@bp.route('/getUsers', methods=['GET','POST'])
+# @is_logged_in
+def getUsers():
+    response={}
+    try:
+        if request.method=='POST':
+            start=int(request.form['start'])
+            limit=int(request.form['length']);
+            users=db.query("""
+                select user_id,
+                name, email
+                from system.user
+                where enabled=True
+                order by name asc
+                offset %s limit %s
+            """%(start,limit)).dictresult()
+
+            total=db.query("""
+                select count(*) from system.user
+                where enabled=True
+            """).dictresult()
+
+            response['data']=users
+            response['recordsTotal']=total[0]['count']
+            response['recordsFiltered']=total[0]['count']
+            response['success']=True
+        else:
+            response['success']=False
+            response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+    except:
+        response['success']=False
+        response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
+        app.logger.info(traceback.format_exc(sys.exc_info()))
+    return json.dumps(response)

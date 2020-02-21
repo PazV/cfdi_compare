@@ -39,3 +39,29 @@
 .valid-field{
     border:solid 1px green;
 }
+
+.companies-fieldset{
+    border: 1px solid #b3abab;
+    border-radius: 5px;
+    padding:5px;
+}
+
+.companies-fieldset-legend{
+    width: auto;
+    margin-left: 5%;
+    font-size:1.2em;
+}
+
+.div-companies-fieldset{
+    padding:0 10px;
+    display:grid;
+}
+
+.spn-company-fieldset{
+    font-size:0.9em;
+    color:#4c4c4c;
+}
+
+span.spn-company-fieldset > i{
+    color:#7b7b7b !important;
+}
