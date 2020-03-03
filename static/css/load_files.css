@@ -35,3 +35,26 @@
         width:85%;
     }
 }
+
+.custom-file-label{
+    color:#969696 !important;
+}
+
+.invalid-file-field{
+    border:1px solid red;
+}
+
+.valid-file-field{
+    border:1px solid green;
+}
+
+.comparing-title{
+    padding:5%;
+    font-size:1.5em;
+}
+
+@media screen and (max-width:650px){
+    .comparing-title{
+        font-size:1em;
+    }
+}

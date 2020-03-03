@@ -11,29 +11,42 @@
     <div class="form-group row form-load-files justify-content-center">
         <label for="company_file_year" class="col-sm-1 col-form-label">Año: </label>
         <div class="col-sm-3">
-            <select class="form-control">
-                <option>1999</option>
-                <option>2000</option>
+            <select class="form-control" id="selCFYears">
+                <!-- <option>1999</option>
+                <option>2000</option> -->
             </select>
         </div>
-        <label for="company_file_month" class="col-sm-1 col-form-label">Mes: </label>
+        <label for="selCFMonths" class="col-sm-1 col-form-label">Mes: </label>
         <div class="col-sm-3">
-            <select class="form-control">
-                <option>Enero</option>
-                <option>Febrero</option>
+            <select class="form-control" id="selCFMonths">
+                <option name="ene">Enero</option>
+                <option name="feb">Febrero</option>
+                <option name="mar">Marzo</option>
+                <option name="abr">Abril</option>
+                <option name="may">Mayo</option>
+                <option name="jun">Junio</option>
+                <option name="jul">Julio</option>
+                <option name="ago">Agosto</option>
+                <option name="sep">Septiembre</option>
+                <option name="oct">Octubre</option>
+                <option name="nov">Noviembre</option>
+                <option name="dic">Diciembre</option>
             </select>
         </div>
     </div>
-    <div class="form-group row form-load-files justify-content-center">
+    <div class="form-group row form-load-files justify-content-center no-space-div">
         <div class="custom-file form-load-files load-file">
-            <input type="file" class="custom-file-input" id="company_file"/>
-            <label class="custom-file-label" for="company_file">Archivo: </label>
+            <input type="file" class="custom-file-input" id="company_file" lang="es" pattern=".XSLX,.xlsx,.Xlsx"/>
+            <label class="custom-file-label" for="company_file">Archivo </label>
         </div>
         <button class="btn btn-secondary btn-sm" style="margin-left:1%;" data-toggle="tooltip" title="Click para ver formato que debe tener el archivo a cargar"><i class="fas fa-question"></i></button>
     </div>
+    <div class="col-sm-7 row justify-content-center">
+        <span class="hide-error spn-error-msg" id="spncompany_file">Error</span>
+    </div>
     <div class="form-group row form-load-files justify-content-end" style="max-width:85%;">
-        <button type="button" class="btn btn-outline-info" style="margin-right:3px;"><i class="fas fa-file-upload"></i> Cargar</button>
-        <button type="button" class="btn btn-outline-info"><i class="fas fa-times"></i> Cancelar</button>
+        <button type="button" class="btn btn-outline-info" style="margin-right:3px;" id="btnLoadCompanyInfo"><i class="fas fa-file-upload"></i> Cargar</button>
+        <button type="button" class="btn btn-outline-info" id="btnCancelCompanyInfo"><i class="fas fa-times"></i> Cancelar</button>
     </div>
 </form>
 

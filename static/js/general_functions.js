@@ -83,3 +83,8 @@ function resetForm(formId,input_type){
         }
     }
 }
+
+function hasExtension(inputID, exts) {
+    var fileName = document.getElementById(inputID).value;
+    return (new RegExp('(' + exts.join('|').replace(/\./g, '\\.') + ')$')).test(fileName);
+}

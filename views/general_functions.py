@@ -36,3 +36,12 @@ class GeneralFunctions:
             exc_info = sys.exc_info()
             app.logger.info(traceback.format_exc(exc_info))
             return False,''
+
+    def as_text(self,value):
+        if value is None:
+            return ""
+        else:
+            try:
+                return str(value)
+            except:
+                return value

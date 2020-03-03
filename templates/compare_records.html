@@ -1,5 +1,42 @@
 {% extends 'main_layout.html' %}
 {% block bodyContent %}
 {{ super() }}
-<h1>Comparar</h1>
+<div class="div-company-name">
+    <span class="spn-company-name">Empresa X SA de CV</span>
+</div>
+<div>
+    <span class="spn-action-title">Realizar comparativo de CFDI</span>
+</div>
+<div class="comparing-title">
+    <span>Selecciona mes y año del cual desea hacer comparativo:</span>
+</div>
+<form id="frmCompareInfo">
+    <div class="form-group row form-load-files justify-content-center">
+        <label for="selComparingYears" class="col-sm-1 col-form-label">Año: </label>
+        <div class="col-sm-3">
+            <select class="form-control" id="selComparingYears"></select>
+        </div>
+        <label for="selComparingMonth" class="col-sm-1 col-form-label">Mes: </label>
+        <div class="col-sm-3">
+            <select class="form-control" id="selComparingMonth">
+                <option name="ene">Enero</option>
+                <option name="feb">Febrero</option>
+                <option name="mar">Marzo</option>
+                <option name="abr">Abril</option>
+                <option name="may">Mayo</option>
+                <option name="jun">Junio</option>
+                <option name="jul">Julio</option>
+                <option name="ago">Agosto</option>
+                <option name="sep">Septiembre</option>
+                <option name="oct">Octubre</option>
+                <option name="nov">Noviembre</option>
+                <option name="dic">Diciembre</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row form-load-files justify-content-end" style="max-width:85%;">
+        <button type="button" class="btn btn-outline-info" style="margin-right:3px;" id="btnDoComparison"><i class="far fa-object-ungroup"></i><span class="sidebar-show-icon"> Comparar</span></button>
+        <button type="button" class="btn btn-outline-info"><i class="fas fa-times"></i><span class="sidebar-show-icon"> Cancelar</span></button>
+    </div>
+</form>
 {% endblock %}
