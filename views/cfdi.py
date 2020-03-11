@@ -187,6 +187,7 @@ def loadCompanyInfo():
 
                 #inserta los registros a la tabla correspondiente
                 for c in cfdi_list:
+                    c['estatus']=str(c['estatus']).lower()
                     db.insert('company_cfdi.c_%s_%s_%s'%(data['company_id'],data['month'],data['year']),c)
 
                 if register_exists==[]: #si no existe registro, se crea uno
@@ -234,6 +235,7 @@ def loadCompanyInfo():
 
                 #inserta los registros a la tabla correspondiente
                 for c in cfdi_list:
+                    c['estatus']=str(c['estatus']).lower()
                     db.insert('company_cfdi.c_%s_%s_%s'%(data['company_id'],data['month'],data['year']),c)
 
                 #elimina datos de la tabla
@@ -355,6 +357,7 @@ def loadSatInfo():
 
                         if count_row!=0:
                             # app.logger.info(row)
+                            row['estatus']=str(row['estatus']).lower()
                             db.insert('sat_cfdi.sc_%s_%s_%s'%(data['company_id'],data['month'],data['year']),row)
                         count_row+=1
 
@@ -409,6 +412,7 @@ def loadSatInfo():
                     count_row=0
                     for row in sreader:
                         if count_row!=0:
+                            row['estatus']=str(row['estatus']).lower()
                             db.insert('sat_cfdi.sc_%s_%s_%s'%(data['company_id'],data['month'],data['year']),row)
                         count_row+=1
 
@@ -493,7 +497,324 @@ def doComparison():
         if request.method=='POST':
             valid,data=GF.getDict(request.form,'post')
             if valid:
-                doComparison
+                table_name="c_%s_%s_%s"%(data['company_id'],data['month'],data['year'])
+                #consulta registros que se encuentran en ambas tablas
+                repeated=db.query("""
+                    select a.uuid as a_uuid,
+                    a.rfc_receptor,
+                    a.nombre_receptor,
+                    a.estatus as a_estatus,
+                    b.estatus as b_estatus,
+                    case
+                        when b.estatus='1' and a.estatus='vigente' then 'Igual'
+                        when b.estatus='0' and a.estatus='cancelado' then 'Igual'
+                        when b.estatus='1' and a.estatus='cancelado' then 'Diferente'
+                        when b.estatus='0' and a.estatus='vigente' then 'Diferente'
+                        when b.estatus='1' and a.estatus='1' then 'Igual'
+                    	when b.estatus='0' and a.estatus='0' then 'Igual'
+                    	when b.estatus='1' and a.estatus='0' then 'Diferente'
+                    	when b.estatus='0' and a.estatus='1' then 'Diferente'
+                    else '--' end as comparacion_estatus,
+                    case when a.estatus='0' then a.fecha_cancelacion else '1900-01-01' end as fecha_cancelacion,
+                    a.monto as a_monto,
+                    b.monto as b_monto,
+                    (a.monto-b.monto) as diferencia_monto,
+                    to_char(a.fecha_emision,'DD-MM-YYYY HH:MI:SS') as a_fe,
+                    to_char(b.fecha_emision,'DD-MM-YYYY HH:MI:SS') as b_fe,
+                    case when to_char(a.fecha_emision,'DD-MM-YYYY')=to_char(b.fecha_emision,'DD-MM-YYYY') then 'Igual' else 'Diferente' end as fe_dif
+                    from company_cfdi.%s a
+                    inner join sat_cfdi.s%s b on lower(a.uuid)=lower(b.uuid)
+                """%(table_name,table_name)).dictresult()
+
+                #consulta registros que se encuentran solo en la tabla del sat
+                only_sat=db.query("""
+                    select a.uuid as a_uuid,
+                    a.rfc_receptor,
+                    a.nombre_receptor,
+                    a.estatus as a_estatus,
+                    a.monto as a_monto,
+                    to_char(a.fecha_emision,'DD-MM-YYYY HH:MI:SS') as a_fe
+                    from sat_cfdi.s%s a
+                    left join company_cfdi.%s b on lower(a.uuid)=lower(b.uuid)  where b.uuid is NULL;
+                """%(table_name,table_name)).dictresult()
+
+                #Crear libro de excel
+                wb = Workbook()
+                ws = wb.create_sheet('Empresa-SAT',0)
+
+                #Crear estilos para hojas de excel
+                header_style=NamedStyle(name='header_style')
+                header_style.font=Font(
+                    name='Arial',
+                    size=12,
+                    bold=True,
+                    italic=False,
+                    color='FFFFFFFF'
+                )
+                header_style.fill=PatternFill(
+                    "solid",
+                    fgColor="ff0066b3"
+                )
+                header_style.alignment=Alignment(
+                    horizontal='center'
+                )
+
+                content_style=NamedStyle(name='content_style')
+                content_style.font=Font(
+                    name='Arial',
+                    size=10,
+                    bold=False,
+                    italic=False,
+                    color='FF000000'
+                )
+                content_style.alignment=Alignment(
+                    horizontal='justify',
+                    vertical='center',
+                    text_rotation=0,
+                    wrap_text=True,
+                    shrink_to_fit=False,
+                    indent=0
+                )
+
+                st_left_style=NamedStyle(name='st_left_style')
+                st_left_style.font=Font(
+                    # name='Arial',
+                    # size=12,
+                    # bold=True,
+                    # italic=False,
+                    # color='FF000000'
+                    name='Arial',
+                    size=12,
+                    bold=True,
+                    italic=False,
+                    color='FFFFFFFF'
+                )
+                st_left_style.alignment=Alignment(
+                    horizontal='right',
+                    vertical='center',
+                    text_rotation=0,
+                    wrap_text=False,
+                    shrink_to_fit=False,
+                    indent=0
+                )
+                st_left_style.fill=PatternFill(
+                    "solid",
+                    fgColor="ff0066b3"
+                )
+                st_right_style=NamedStyle(name='st_right_style')
+                st_right_style.font=Font(
+                    name='Arial',
+                    size=12,
+                    bold=False,
+                    italic=True,
+                    color='FF000000'
+                )
+                st_right_style.alignment=Alignment(
+                    horizontal='center',
+                    vertical='center',
+                    text_rotation=0,
+                    wrap_text=False,
+                    shrink_to_fit=False,
+                    indent=0
+                )
+
+                #Crear hoja principal del comparativo
+                header_titles=['UUID','RFC Receptor','Nombre Receptor','Estatus SAT','Estatus Empresa','Comparación Estatus','Fecha Cancelación SAT','Total SAT','Total Empresa','Diferencia Total','Fecha Emisión SAT','Fecha Emisión Empresa', 'Comparación Fecha Emisión']
+                ht_count=1
+                for ht in header_titles:
+                    ws.cell(column=ht_count,row=1,value=ht)
+                    ws.cell(column=ht_count,row=1).style=header_style
+                    ht_count+=1
+
+                r_count=2
+                count_estatus_dif=0
+                fe_dif=0
+                monto_dif=0
+                for r in repeated:
+                    ws.cell(column=1,row=r_count,value=r['a_uuid'])
+                    ws.cell(column=2,row=r_count,value=r['rfc_receptor'])
+                    ws.cell(column=3,row=r_count,value=r['nombre_receptor'])
+                    ws.cell(column=4,row=r_count,value=r['b_estatus'])
+                    ws.cell(column=5,row=r_count,value=r['a_estatus'])
+                    ws.cell(column=6,row=r_count,value=r['comparacion_estatus'])
+                    ws.cell(column=7,row=r_count,value=r['fecha_cancelacion'])
+                    ws.cell(column=8,row=r_count,value=r['b_monto'])
+                    ws.cell(column=9,row=r_count,value=r['a_monto'])
+                    ws.cell(column=10,row=r_count,value=r['diferencia_monto'])
+                    ws.cell(column=11,row=r_count,value=r['b_fe'])
+                    ws.cell(column=12,row=r_count,value=r['a_fe'])
+                    ws.cell(column=13,row=r_count,value=r['fe_dif'])
+                    if r['comparacion_estatus']=='Diferente':
+                        count_estatus_dif+=1
+                    if r['fe_dif']=='Diferente':
+                        fe_dif+=1
+                    if float(r['diferencia_monto'])>0:
+                        monto_dif+=1
+
+                    for a in range(1,14):
+                        ws.cell(column=a,row=r_count).style=content_style
+
+
+                    r_count+=1
+
+                #Crear hoja con datos que solo se encontraron en el SAT
+                headers_os=['UUID','RFC Receptor','Nombre Receptor','Estatus','Total','Fecha Emisión']
+                ws2 = wb.create_sheet('Solo SAT',1)
+                ht_count2=1
+                for ht2 in headers_os:
+                    ws2.cell(column=ht_count2,row=1,value=ht2)
+                    ws2.cell(column=ht_count2,row=1).style=header_style
+                    ht_count2+=1
+
+                os_count=2
+                for on_s in only_sat:
+                    ws2.cell(column=1,row=os_count,value=on_s['a_uuid'])
+                    ws2.cell(column=2,row=os_count,value=on_s['rfc_receptor'])
+                    ws2.cell(column=3,row=os_count,value=on_s['nombre_receptor'])
+                    ws2.cell(column=4,row=os_count,value=on_s['a_estatus'])
+                    ws2.cell(column=5,row=os_count,value=on_s['a_monto'])
+                    ws2.cell(column=6,row=os_count,value=on_s['a_fe'])
+                    os_count+=1
+
+                total_sat=db.query("""
+                    select count(*) from sat_cfdi.s%s
+                """%table_name).dictresult()[0]['count']
+                total_company=db.query("""
+                    select count(*) from company_cfdi.%s
+                """%table_name).dictresult()[0]['count']
+                total_repeated=len(repeated)
+
+                #Crear hoja con estadísticas del reporte
+                meses={
+                    'ene':'Enero','feb':'Febrero','mar':'Marzo','abr':'Abril','may':'Mayo','jun':'Junio','jul':'Julio',
+                    'ago':'Agosto','sep':'Septiembre','oct':'Octubre','nov':'Noviembre','dic':'Diciembre'
+                }
+                ws3=wb.create_sheet('Estad.',2)
+                values_left=['Mes analizado:','Total CFDI registrados en portal del SAT:','Total CFDI registrados por la empresa:','Total CFDI encontrados en ambos registros:','Total registros encontrados con estatus diferente:','Total registros encontrados con fecha de emisión diferentes:','Total registros encontrados con diferencia en totales:']
+                count_row_st=2
+                for vl in values_left:
+                    ws3.cell(column=2,row=count_row_st,value=vl)
+                    ws3.cell(column=2,row=count_row_st).style=st_left_style
+                    count_row_st+=1
+
+                comp_info=[]
+                count_row_st=2
+                values_right=["%s - %s"%(meses[data['month']],data['year']),total_sat,total_company,total_repeated,count_estatus_dif,fe_dif,monto_dif]
+                for vr in values_right:
+                    ws3.cell(column=3,row=count_row_st,value=vr)
+                    ws3.cell(column=3,row=count_row_st).style=st_right_style
+                    comp_info.append('%s %s'%(values_left[count_row_st-2],vr))
+                    count_row_st+=1
+
+
+                #Ajustar ancho de columnas
+                for w in wb.sheetnames:
+                    sheet=wb[w]
+                    for column_cells in sheet.columns:
+                        length = max(len(GF.as_text(cell.value))+5 for cell in column_cells)
+                        sheet.column_dimensions[column_cells[0].column].width = length
+
+                #Asignar nombre al archivo y guardarlo
+                time=strftime("%H_%M_%S",gmtime())
+                file_name='Rel-%s-%s_%s.xlsx'%(data['month'],data['year'],time)
+                path=os.path.join(cfg.path_for_downloads,file_name)
+                wb.save(path)
+
+                response['msg_response']='El comparativo ha sido realizado con éxito, ¿desea descargar el reporte asociado?'
+                response['filename']='/cfdi/downloadFile/%s'%file_name
+
+                exists_cd=db.query("""
+                    select * from system.comparison_data
+                    where year=%s and month='%s' and company_id=%s
+                """%(data['year'],data['month'],data['company_id'])).dictresult()
+                if exists_cd==[]:
+                    comparison_data={
+                        'company_id':data['company_id'],
+                        'month':data['month'],
+                        'year':data['year'],
+                        'comparison_date':'now',
+                        'info':str(comp_info)
+                    }
+                    db.insert('system.comparison_data',comparison_data)
+                else:
+                    db.query("""
+                        update system.comparison_data
+                        set info='%s',
+                        comparison_date='now'
+                        where company_id=%s and month='%s' and year=%s
+                    """%(str(comp_info).replace("'","''"),data['company_id'],data['month'],data['year']))
+                response['success']=True
+            else:
+                response['success']=False
+                response['msg_response']='Ocurrió un error al intentar validar la información.'
+        else:
+            response['success']=False
+            response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+    except:
+        response['success']=False
+        response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
+        app.logger.info(traceback.format_exc(sys.exc_info()))
+    return json.dumps(response)
+
+@bp.route('/getMonthsProgress', methods=['GET','POST'])
+# @is_logged_in
+def getMonthsProgress():
+    response={}
+    try:
+        if request.method=='POST':
+            valid,data=GF.getDict(request.form,'post')
+            if valid:
+                company=db.query("""
+                    select months
+                    from system.company_cfdi_my_rel
+                    where company_id=%s and year=%s
+                """%(data['company_id'],data['year'])).dictresult()
+
+                sat=db.query("""
+                    select months
+                    from system.sat_cfdi_my_rel
+                    where company_id=%s and year=%s
+                """%(data['company_id'],data['year'])).dictresult()
+
+                do_for=False
+                if company!=[] and sat!=[]:
+                    c_months=eval(company[0]['months'])
+                    s_months=eval(sat[0]['months'])
+                    do_for=True
+                else:
+                    if company!=[] or sat!=[]:
+                        do_for=True
+                        if company==[]:
+                            c_months={'ene':False,'feb':False,'mar':False,'abr':False,'may':False,'jun':False,'jul':False,'ago':False,'sep':False,'oct':False,'nov':False,'dic':False}
+                        else:
+                            c_months=eval(company[0]['months'])
+                        if sat==[]:
+                            s_months={'ene':False,'feb':False,'mar':False,'abr':False,'may':False,'jun':False,'jul':False,'ago':False,'sep':False,'oct':False,'nov':False,'dic':False}
+                        else:
+                            s_months=eval(company[0]['months'])
+                    else:
+                        do_for=False
+                months={}
+                if do_for==True:
+                    for k,v in c_months.iteritems():
+                        comparison=db.query("""
+                            select info from system.comparison_data
+                            where company_id=%s and year=%s and month='%s'
+                        """%(data['company_id'],data['year'],k)).dictresult()
+                        if comparison!=[]:
+                            months[k]='a-mp-green'
+                        else:
+                            if v==True and s_months[k]==True:
+                                months[k]='a-mp-blue'
+                            elif v==True or s_months[k]==True:
+                                months[k]='a-mp-orange'
+                            else:
+                                months[k]='a-mp-gray'
+                else:
+                    months={'ene':'a-mp-gray','feb':'a-mp-gray','mar':'a-mp-gray','abr':'a-mp-gray','may':'a-mp-gray','jun':'a-mp-gray','jul':'a-mp-gray','ago':'a-mp-gray','sep':'a-mp-gray','oct':'a-mp-gray','nov':'a-mp-gray','dic':'a-mp-gray'}
+                response['success']=True
+                response['data']=months
+
             else:
                 response['success']=False
                 response['msg_response']='Ocurrió un error al intentar validar la información.'

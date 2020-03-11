@@ -1,0 +1,116 @@
+.div-months-prog{
+    margin:0 3%;
+}
+
+.a-month-prog{
+    width: 15%;
+    margin: 10px 5px;
+    color: white;
+    border-color: #ccc9c9;
+    text-align: center;
+    height: 80px;
+    vertical-align: middle;
+    padding: 30px;
+    font-weight: bold;
+    transition:0.2s;
+}
+
+.a-mp-yellow{
+    background: yellow;
+}
+.a-mp-yellow:hover{
+    color:yellow;
+    border:1px solid yellow;
+}
+
+.a-mp-green{
+    background:#28a745;
+}
+.a-mp-green:hover{
+    color:#28a745;
+    border:1px solid #28a745;
+}
+
+.a-mp-blue{
+    background:#23a8bd;
+}
+.a-mp-blue:hover{
+    color:#23a8bd;
+    border:1px solid #23a8bd;
+}
+
+.a-mp-red{
+    background:#de472b;
+}
+.a-mp-red:hover{
+    color:#de472b;
+    border:1px solid #de472b;
+}
+
+.a-mp-orange{
+    background:#f38430;
+}
+.a-mp-orange:hover{
+    color:#f38430;
+    border:1px solid #f38430;
+}
+
+.a-mp-gray{
+    background:#B0AFAF;
+}
+.a-mp-gray:hover{
+    color:#B0AFAF;
+    border:1px solid #B0AFAF;
+}
+
+.a-month-prog:hover{
+    text-decoration:none;
+    background-color: white;
+    border-radius: 5px;
+}
+@media screen and (max-width:1150px){
+    .a-month-prog{
+        padding:30px 15px;
+    }
+}
+
+@media screen and (max-width: 915px){
+    .spn-ovfl-month{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        width: 30px;
+        display: inline-block;
+    }
+    .spn-ovfl-month-24{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        width: 24px;
+        display: inline-block;
+    }
+    .spn-ovfl-month-25{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        width: 25px;
+        display: inline-block;
+    }
+    .spn-ovfl-month-28{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        width: 28px;
+        display: inline-block;
+    }
+    .spn-ovfl-month-29{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        width: 29px;
+        display: inline-block;
+    }
+    .a-month-prog{
+        padding:30px 5px;
+    }
+}

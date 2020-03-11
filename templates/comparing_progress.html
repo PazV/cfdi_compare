@@ -1,5 +1,38 @@
 {% extends 'main_layout.html' %}
 {% block bodyContent %}
 {{ super() }}
-    <h1>Avance</h1>
+<div class="div-company-name">
+    <span class="spn-company-name">Empresa X S.A. de C.V.</span>
+</div>
+<div>
+    <span class="spn-action-title">Avance por  mes</span>
+</div>
+<form>
+    <div class="form-group row form-load-files justify-content-center">
+        <label for="selProgYears" class="col-sm-2 col-form-label">Seleccione año: </label>
+        <div class="col-sm-3">
+            <select class="form-control" id="selProgYears"></select>
+        </div>
+    </div>
+</form>
+<div class="div-months-prog">
+    <div class="row justify-content-around">
+        <a href="#" role="button" class="a-month-prog" id="am-ene"><span class="spn-ovfl-month">Enero</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-feb"><span class="spn-ovfl-month">Febrero</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-mar"><span class="spn-ovfl-month">Marzo</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-abr"><span class="spn-ovfl-month-29">Abril</span></a>
+    </div>
+    <div class="row justify-content-around">
+        <a href="#" role="button" class="a-month-prog" id="am-may"><span class="spn-ovfl-month">Mayo</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-jun"><span class="spn-ovfl-month">Junio</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-jul"><span class="spn-ovfl-month-24">Julio</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-ago"><span class="spn-ovfl-month">Agosto</span></a>
+    </div>
+    <div class="row justify-content-around">
+        <a href="#" role="button" class="a-month-prog" id="am-sep"><span class="spn-ovfl-month">Septiembre</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-oct"><span class="spn-ovfl-month-28">Octubre</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-nov"><span class="spn-ovfl-month">Noviembre</span></a>
+        <a href="#" role="button" class="a-month-prog" id="am-dic"><span class="spn-ovfl-month-25">Diciembre</span></a>
+    </div>
+</div>
 {% endblock %}

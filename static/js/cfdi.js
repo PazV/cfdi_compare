@@ -10,6 +10,10 @@ $(document).ready(function(){
     if (window.location.pathname.includes('/cfdi/compare')){
         getYears("#selComparingYears");
     }
+    if (window.location.pathname.includes('/cfdi/my-progress')){
+        getYears("#selProgYears");
+        getMonthsProgress($("#selProgYears").find("option:selected").attr("name"),2); //año,company_id
+    }
 
     $("#company_file").on('change',function(){
         var path=$("#company_file")[0].value.split("\\").pop();
@@ -60,6 +64,10 @@ $(document).ready(function(){
     $("#btnLoadCompanyInfo").click(function(){
         $("#company_file").focusout();
         if( $("#company_file").siblings('label').hasClass('valid-file-field')){
+            EasyLoading.show({
+                text:'Cargando... (Esto puede demorar unos minutos)',
+                type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]
+            });
             //verificar si ya existe registro del mes y año seleccionado
             $.ajax({
                 url:'/cfdi/checkCompanyExistingRecords',
@@ -81,6 +89,7 @@ $(document).ready(function(){
                         data.append(file_name,file);
                         data.append('file_name',file_name);
                         if (res.exists){
+                            EasyLoading.hide();
                             data.append('exists','replace'); //indica que la tabla ya existe y hay que reemplazar los registros
                             $.confirm({
                                 theme:'dark',
@@ -90,6 +99,10 @@ $(document).ready(function(){
                                     confirm:{
                                         text:'Sí',
                                         action:function(){
+                                            EasyLoading.show({
+                                                text:'Cargando... (Esto puede demorar unos minutos)',
+                                                type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]
+                                            });
                                             $.ajax({
                                                 url:'/cfdi/loadCompanyInfo',
                                                 type:'POST',
@@ -102,6 +115,7 @@ $(document).ready(function(){
                                                     }catch(err){
                                                         ajaxError();
                                                     }
+                                                    EasyLoading.hide();
                                                     if (res2.success){
                                                         $.alert({
                                                             theme:'dark',
@@ -126,6 +140,7 @@ $(document).ready(function(){
                                                     }
                                                 },
                                                 error:function(){
+                                                    EasyLoading.hide();
                                                     $.alert({
                                                         theme:'dark',
                                                         title:'Atención',
@@ -142,6 +157,10 @@ $(document).ready(function(){
                             })
                         }
                         else{
+                            EasyLoading.show({
+                                text:'Cargando... (Esto puede demorar unos minutos)',
+                                type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]
+                            });
                             data.append('exists','create'); //indica que la tabla no existe y hay que crearla
                             $.ajax({
                                 url:'/cfdi/loadCompanyInfo',
@@ -155,6 +174,7 @@ $(document).ready(function(){
                                     }catch(err){
                                         ajaxError();
                                     }
+                                    EasyLoading.hide();
                                     if (res.success){
                                         $.alert({
                                             theme:'dark',
@@ -179,6 +199,7 @@ $(document).ready(function(){
                                     }
                                 },
                                 error:function(){
+                                    EasyLoading.hide();
                                     $.alert({
                                         theme:'dark',
                                         title:'Atención',
@@ -189,6 +210,7 @@ $(document).ready(function(){
                         }
                     }
                     else{
+                        EasyLoading.hide();
                         $.alert({
                             theme:'dark',
                             title:'Atención',
@@ -197,6 +219,7 @@ $(document).ready(function(){
                     }
                 },
                 error:function(){
+                    EasyLoading.hide();
                     $.alert({
                         theme:'dark',
                         title:'Atención',
@@ -217,6 +240,10 @@ $(document).ready(function(){
     $("#btnLoadSatInfo").click(function(){
         $("#sat_file").focusout();
         if ($("#sat_file").siblings('label').hasClass('valid-file-field')){
+            EasyLoading.show({
+                text:'Cargando... (Esto puede demorar unos minutos)',
+                type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]
+            });
             //verificar si ya existe registro del año y mes seleccionado
             $.ajax({
                 url:'/cfdi/checkSatExistingRecords',
@@ -238,6 +265,7 @@ $(document).ready(function(){
                         data.append(file_name,file);
                         data.append('file_name',file_name);
                         if (res.exists){
+                            EasyLoading.hide();
                             data.append('exists','replace'); //indica que la tabla ya existe y hay que reemplazar los registros
                             $.confirm({
                                 theme:'dark',
@@ -247,6 +275,10 @@ $(document).ready(function(){
                                     confirm:{
                                         text:'Sí',
                                         action:function(){
+                                            EasyLoading.show({
+                                                text:'Cargando... (Esto puede demorar unos minutos)',
+                                                type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]
+                                            });
                                             $.ajax({
                                                 url:'/cfdi/loadSatInfo',
                                                 type:'POST',
@@ -259,6 +291,7 @@ $(document).ready(function(){
                                                     }catch(err){
                                                         ajaxError();
                                                     }
+                                                    EasyLoading.hide();
                                                     if (res2.success){
                                                         $.alert({
                                                             theme:'dark',
@@ -283,6 +316,7 @@ $(document).ready(function(){
                                                     }
                                                 },
                                                 error:function(){
+                                                    EasyLoading.hide();
                                                     $.alert({
                                                         theme:'dark',
                                                         title:'Atención',
@@ -309,6 +343,7 @@ $(document).ready(function(){
                                     }catch(err){
                                         ajaxError();
                                     }
+                                    EasyLoading.hide();
                                     if (res2.success){
                                         $.alert({
                                             theme:'dark',
@@ -333,6 +368,7 @@ $(document).ready(function(){
                                     }
                                 },
                                 error:function(){
+                                    EasyLoading.hide();
                                     $.alert({
                                         theme:'dark',
                                         title:'Atención',
@@ -343,6 +379,7 @@ $(document).ready(function(){
                         }
                     }
                     else{
+                        EasyLoading.hide();
                         $.alert({
                             theme:'dark',
                             title:'Atención',
@@ -457,6 +494,10 @@ $(document).ready(function(){
         data['month']=$("#selComparingMonth").find("option:selected").attr("name");
         data['year']=$("#selComparingYears").find("option:selected").attr("name");
         data['company_id']=2;
+        EasyLoading.show({
+            text:'Cargando... (Esto puede demorar unos minutos)',
+            type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]
+        });
         $.ajax({
             url:'/cfdi/checkDataToCompare',
             type:'POST',
@@ -469,40 +510,44 @@ $(document).ready(function(){
                 }
                 if (res.success){
                     if (res.available){
-                        $.alert({
-                            theme:'dark',
-                            title:'Atención',
-                            content:res.msg_response
+                        $.ajax({
+                            url:'/cfdi/doComparison',
+                            type:'POST',
+                            data:JSON.stringify(data),
+                            success:function(response2){
+                                try{
+                                    var res2=JSON.parse(response2);
+                                }catch(err){
+                                    ajaxError();
+                                }
+                                EasyLoading.hide();
+                                if (res2.success){
+                                    $.alert({
+                                        theme:'dark',
+                                        title:'Atención',
+                                        content:res2.msg_response,
+                                        buttons:{
+                                            confirm:{
+                                                text:'Descargar',
+                                                action:function(){
+                                                    window.open(res2.filename,"_blank");
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                                else{
+                                    $.alert({
+                                        theme:'dark',
+                                        title:'Atención',
+                                        content:res2.msg_response
+                                    });
+                                }
+                            }
                         });
-                        // $.ajax({
-                        //     url:'/cfdi/doComparison',
-                        //     type:'POST',
-                        //     data:JSON.stringify(data),
-                        //     success:function(response2){
-                        //         try{
-                        //             var res2=JSON.parse(response2);
-                        //         }catch(err){
-                        //             ajaxError();
-                        //         }
-                        //         if (res2.success){
-                        //             $.alert({
-                        //                 theme:'dark',
-                        //                 title:'Atención',
-                        //                 content:res2.msg_response,
-                        //                 buttons:{
-                        //                     confirm:{
-                        //                         text:'Descargar',
-                        //                         action:function(){
-                        //
-                        //                         }
-                        //                     }
-                        //                 }
-                        //             })
-                        //         }
-                        //     }
-                        // })
                     }
                     else{
+                        EasyLoading.hide();
                         $.alert({
                             theme:'dark',
                             title:'Atención',
@@ -511,6 +556,7 @@ $(document).ready(function(){
                     }
                 }
                 else{
+                    EasyLoading.hide();
                     $.alert({
                         theme:'dark',
                         title:'Atención',
@@ -519,6 +565,7 @@ $(document).ready(function(){
                 }
             },
             error:function(){
+                EasyLoading.hide();
                 $.alert({
                     theme:'dark',
                     title:'Atención',
@@ -526,6 +573,10 @@ $(document).ready(function(){
                 });
             }
         });
+    });
+
+    $("#selProgYears").change(function(){
+        getMonthsProgress($("#selProgYears").find("option:selected").attr("name"),2);
     });
 });
 
@@ -537,4 +588,43 @@ function getYears(sel_id){
             name:i
         }));
     }
+}
+
+function getMonthsProgress(year,company_id){
+     $.ajax({
+         url:'/cfdi/getMonthsProgress',
+         type:'POST',
+         data:JSON.stringify({'year':year,'company_id':company_id}),
+         success:function(response){
+             try{
+                 var res=JSON.parse(response);
+             }catch(err){
+                ajaxError();
+             }
+             if (res.success){
+                 var months_names=Object.keys(res.data);
+                 for (x of months_names){
+                     $("#am-"+x).removeClass('a-mp-green');
+                     $("#am-"+x).removeClass('a-mp-gray');
+                     $("#am-"+x).removeClass('a-mp-blue');
+                     $("#am-"+x).removeClass('a-mp-orange');
+                     $("#am-"+x).addClass(res.data[x]);
+                 }
+             }
+             else{
+                 $.alert({
+                     theme:'dark',
+                     title:'Atención',
+                     content:res.msg_response
+                 });
+             }
+         },
+         error:function(){
+             $.ajax({
+                 theme:'dark',
+                 title:'Atención',
+                 content:'Ocurrió un error, favor de intentarlo de nuevo.'
+             });
+         }
+     });
 }
