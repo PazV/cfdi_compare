@@ -114,3 +114,145 @@
         padding:30px 5px;
     }
 }
+
+.month-detail-container{
+    width: 80%;
+    margin:auto;
+    /* border:1px solid black; */
+    height: 300px;
+}
+
+.div-month-name{
+    height:inherit;
+    width: 5%;
+    /* background-color: blue; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    resize: vertical;
+    border-top-left-radius: 8px;
+}
+
+.det-month-name-div{
+    color:white;
+    font-weight: bolder;
+    font-size: 1.5em;
+    resize: vertical;
+    transform: rotate(270deg);
+}
+
+.div-month-status-content{
+    width: 95%;
+}
+
+.div-month-status-title{
+    height: 2em;
+    /* background-color: orange; */
+    display: flex;
+    justify-content: center;
+    border-top-right-radius: 8px;
+}
+
+.spn-month-status{
+    color:white;
+    font-weight:bold;
+    font-size:1.5em;
+}
+
+.hide-div{
+    display: none;
+}
+
+.show-div-general{
+    display: block;
+}
+
+.show-div-detail{
+    display:flex;
+}
+
+@keyframes disappear-div{
+    25%{transform:scale(.75);}
+    50%{transform:scale(.5);}
+    75%{transform:scale(.25);}
+    100% {transform:scale(0);}
+
+}
+@keyframes hide-div-k {
+    100%{visibility: hidden; position: absolute;}
+}
+.animate-div-disappear{
+    animation:disappear-div 1s linear 0s forwards;
+    -webkit-animation:disappear-div 1s linear 0s forwards, hide-div-k .25s linear 0.5s forwards;
+}
+
+@keyframes appear-div-md{
+    25%{display:flex; transform:scale(.25) translateY(200px);}
+    50%{transform:scale(.5) translateY(150px);}
+    75%{transform: scale(.75) translateY(100px);}
+    100%{transform:scale(1);}
+}
+
+@keyframes appear-div-mg {
+    25%{display:block; transform:scale(.25) translateY(200px);}
+    50%{transform:scale(.5) translateY(150px);}
+    75%{transform: scale(.75) translateY(100px);}
+    100%{transform:scale(1);}
+}
+
+.animate-div-appear-md{
+    animation:appear-div-md 1s linear  forwards;
+    -webkit-animation:appear-div-md 1s linear forwards;
+}
+
+.animate-div-appear-mg{
+    animation:appear-div-mg 1s linear forwards;
+    -webkit-animation: appear-div-mg 1s linear forwards;
+}
+
+.month-info{
+    font-size:1em;
+    color:#696868;
+}
+
+.month-info p{
+    margin-bottom:0.3em;
+}
+
+.month-info-title{
+    font-size:1.3em;
+    color:#525252;
+    font-weight: bold;
+}
+
+.month-bg-green-nm{
+    background-color: #23923c;
+}
+
+.month-bg-green-st{
+    background-color:#2fc150;
+}
+
+.month-bg-orange-nm{
+    background-color: #d8752b;
+}
+
+.month-bg-orange-st{
+    background-color: #ff8d38;
+}
+
+.month-bg-blue-nm{
+    background-color: #1f8d9e;
+}
+
+.month-bg-blue-st{
+    background-color: #2ccde6;
+}
+
+.month-bg-gray-nm{
+    background-color: #7d7d7d;
+}
+
+.month-bg-gray-st{
+    background-color: #c7c7c7;
+}

@@ -10,9 +10,9 @@ $(document).ready(function(){
     if (window.location.pathname.includes('/cfdi/compare')){
         getYears("#selComparingYears");
     }
-    if (window.location.pathname.includes('/cfdi/my-progress')){
-        getYears("#selProgYears");
-        getMonthsProgress($("#selProgYears").find("option:selected").attr("name"),2); //año,company_id
+
+    if (window.location.pathname.includes('/cfdi/month-detail')){
+        getYears("#selYearsMonthDetail");
     }
 
     $("#company_file").on('change',function(){
@@ -575,9 +575,7 @@ $(document).ready(function(){
         });
     });
 
-    $("#selProgYears").change(function(){
-        getMonthsProgress($("#selProgYears").find("option:selected").attr("name"),2);
-    });
+
 });
 
 function getYears(sel_id){
@@ -588,43 +586,4 @@ function getYears(sel_id){
             name:i
         }));
     }
-}
-
-function getMonthsProgress(year,company_id){
-     $.ajax({
-         url:'/cfdi/getMonthsProgress',
-         type:'POST',
-         data:JSON.stringify({'year':year,'company_id':company_id}),
-         success:function(response){
-             try{
-                 var res=JSON.parse(response);
-             }catch(err){
-                ajaxError();
-             }
-             if (res.success){
-                 var months_names=Object.keys(res.data);
-                 for (x of months_names){
-                     $("#am-"+x).removeClass('a-mp-green');
-                     $("#am-"+x).removeClass('a-mp-gray');
-                     $("#am-"+x).removeClass('a-mp-blue');
-                     $("#am-"+x).removeClass('a-mp-orange');
-                     $("#am-"+x).addClass(res.data[x]);
-                 }
-             }
-             else{
-                 $.alert({
-                     theme:'dark',
-                     title:'Atención',
-                     content:res.msg_response
-                 });
-             }
-         },
-         error:function(){
-             $.ajax({
-                 theme:'dark',
-                 title:'Atención',
-                 content:'Ocurrió un error, favor de intentarlo de nuevo.'
-             });
-         }
-     });
 }

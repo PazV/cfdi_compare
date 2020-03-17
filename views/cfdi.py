@@ -49,6 +49,11 @@ def compareRecords():
 def comparingProgress():
     return render_template('comparing_progress.html', g=g)
 
+@bp.route('/month-detail/<year>/<month>')
+# @is_logged_in
+def monthDetail(year,month):
+    return render_template('progress_month_detail.html',g=g)
+
 
 @bp.route('/createLoadingFormat', methods=['GET','POST'])
 # @is_logged_in
@@ -815,6 +820,80 @@ def getMonthsProgress():
                 response['success']=True
                 response['data']=months
 
+            else:
+                response['success']=False
+                response['msg_response']='Ocurrió un error al intentar validar la información.'
+        else:
+            response['success']=False
+            response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+    except:
+        response['success']=False
+        response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
+        app.logger.info(traceback.format_exc(sys.exc_info()))
+    return json.dumps(response)
+
+@bp.route('/getMonthDetailInfo', methods=['GET','POST'])
+# @is_logged_in
+def getMonthDetailInfo():
+    response={}
+    try:
+        if request.method=='POST':
+            valid,data=GF.getDict(request.form,'post')
+            if valid:
+                response['success']=True
+                exists_comparison=db.query("""
+                    select * from system.comparison_data
+                    where company_id=%s
+                    and year=%s and month='%s'
+                """%(data['company_id'],data['year'],data['month'])).dictresult()
+                if exists_comparison!=[]:
+                    response['comparison']=True
+                    response['data']=eval(exists_comparison[0]['info'])
+                    response['color_class']='month-bg-green'
+                else:
+                    response['comparison']=False
+                    sat=db.query("""
+                        select * from system.sat_cfdi_my_rel
+                        where year=%s and company_id=%s
+                    """%(data['year'],data['company_id'])).dictresult()
+                    company=db.query("""
+                        select * from system.company_cfdi_my_rel
+                        where company_id=%s and year=%s
+                    """%(data['company_id'],data['year'])).dictresult()
+                    resp_info={}
+                    table_name="c_%s_%s_%s"%(data['company_id'],data['month'],data['year'])
+                    if sat!=[]:
+                        sat_months=eval(sat[0]['months'])
+                        if sat_months[data['month']]==True:
+                            sat_date=eval(sat[0]['updated'])
+                            sat_total=db.query("""
+                                select count(*) from sat_cfdi.s%s
+                            """%table_name).dictresult()
+                            resp_info['sat']=['CFDIs registrados en el SAT','Estatus: Archivo cargado','Fecha de carga: %s'%sat_date[data['month']],'Total registros cargados: %s'%sat_total[0]['count']]
+                        else:
+                            resp_info['sat']=['CFDIs registrados en el SAT','Estatus: Pendiente por cargar','Fecha de carga: --','Total registros cargados: --']
+                    else:
+                        resp_info['sat']=['CFDIs registrados en el SAT','Estatus: Pendiente por cargar','Fecha de carga: --','Total registros cargados: --']
+                    if company!=[]:
+                        comp_months=eval(company[0]['months'])
+                        if comp_months[data['month']]==True:
+                            comp_date=eval(company[0]['updated'])
+                            comp_total=db.query("""
+                                select count(*) from company_cfdi.%s
+                            """%table_name).dictresult()
+                            resp_info['company']=['CFDIs registrados por la empresa','Estatus: Archivo cargado','Fecha de carga: %s'%comp_date[data['month']],'Total registros cargados: %s'%comp_total[0]['count']]
+                        else:
+                            resp_info['company']=['CFDIs registrados por la empresa','Esatus: Pendiente por cargar', 'Fecha de carga: --','Total registros cargados: --']
+                    else:
+                        resp_info['company']=['CFDIs registrados por la empresa','Esatus: Pendiente por cargar', 'Fecha de carga: --','Total registros cargados: --']
+                    if company!=[] and sat!=[]:
+                        response['color_class']='month-bg-blue'
+                    else:
+                        if company!=[] or sat!=[]:
+                            response['color_class']='month-bg-orange'
+                        else:
+                            response['color_class']='month-bg-gray'
+                    response['data']=resp_info
             else:
                 response['success']=False
                 response['msg_response']='Ocurrió un error al intentar validar la información.'

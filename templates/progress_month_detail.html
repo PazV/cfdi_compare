@@ -1,0 +1,29 @@
+{% extends 'main_layout.html' %}
+{% block bodyContent %}
+{{ super() }}
+<div class="div-company-name">
+    <span class="spn-company-name">Empresa X S.A. de C.V.</span>
+</div>
+<div>
+    <span class="spn-action-title">Detalle por mes</span>
+</div>
+<form>
+    <div class="form-group row form-load-files justify-content-center">
+        <label for="selYearsMonthDetail" class="col-sm-2 col-form-label">Seleccione año: </label>
+        <div class="col-sm-3">
+            <select class="form-control" id="selYearsMonthDetail"></select>
+        </div>
+    </div>
+</form>
+<div class="month-detail-container row">
+    <div class="div-month-name">
+        <div class="det-month-name-div">Diciembre</div>
+    </div>
+    <div class="div-month-status-content">
+        <div class="div-month-status-title">
+            <span class="spn-month-status">Pendiente/Completado</span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

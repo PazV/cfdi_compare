@@ -15,7 +15,7 @@
         </div>
     </div>
 </form>
-<div class="div-months-prog">
+<div class="div-months-prog show-div-general" id="divMonthGeneral">
     <div class="row justify-content-around">
         <a href="#" role="button" class="a-month-prog" id="am-ene"><span class="spn-ovfl-month">Enero</span></a>
         <a href="#" role="button" class="a-month-prog" id="am-feb"><span class="spn-ovfl-month">Febrero</span></a>
@@ -35,4 +35,18 @@
         <a href="#" role="button" class="a-month-prog" id="am-dic"><span class="spn-ovfl-month-25">Diciembre</span></a>
     </div>
 </div>
+<div class="month-detail-container row hide-div" id="divMonthDetail">
+    <div class="div-month-name" id="divMonthDetNameParent">
+        <div class="det-month-name-div" id="divMonthDetName">Diciembre</div>
+    </div>
+    <div class="div-month-status-content">
+        <div class="div-month-status-title" id="divMonthDetStatus">
+            <span class="spn-month-status">Pendiente/Completado</span>
+        </div>
+        <div class="month-info-detail month-info" id="divMonthInfo">
+
+        </div>
+    </div>
+</div>
+<button class="btn btn-danger float-right mr-5 hide-div" id="btnReturnDetail" type="button"><i class="fas fa-arrow-alt-circle-left"></i><span class="sidebar-show-icon"> Regresar</span></button>
 {% endblock %}
