@@ -30,6 +30,11 @@
             <div class="body-div-10">
                 {% include 'elements/_topnavbar.html' %}
                 <div class="working-panel">
+                    {% if g.user_info %}
+                        <span id="spnSession" style="display: none">{{ g.user_info }}</span>
+                        {% else %}
+                        <span id="spnSession" style="display: none">{}</span>
+                    {% endif %}
                     {% block bodyContent %}{% endblock %}
                 </div>
             </div>
@@ -55,5 +60,6 @@
         <script src="/static/js/general_functions.js"></script>
         <script src="/static/js/cfdi.js"></script>
         <script src="/static/js/progress.js"></script>
+
     </body>
 </html>

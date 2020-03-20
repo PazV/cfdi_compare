@@ -1,6 +1,10 @@
 <nav class="navbar navbar-dark bg-dark topnavbar-style-b-o fixed-top">
     <a class="navbar-brand sidebar-show-icon" href="#">
-        Bienvenido fulanito
+        <!-- Bienvenido fulanito -->
+        {% if g.user_info %}
+        Bienvenido {{ g.name }}
+        {% endif %}
+
         <!-- <img src="/static/images/blue-circle.png" width="30" height="30" class="d-inline-block align-top" alt="Inicio"/> -->
     </a>
     <ul class="nav">
@@ -11,7 +15,7 @@
             <a class="nav-link dropdown-toggle" href="#" style="color:white;" id="navbarUserAccount" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Mi cuenta"><i class="fas fa-user-circle"></i></a>
             <div class="dropdown-menu dropdown-menu-right" aria-llabeledby="navbarUserAccounts">
                 <a class="dropdown-item" href="#">Mi cuenta</a>
-                <a class="dropdown-item" href="#">Cerrar sesión</a>
+                <a class="dropdown-item" href="/login/signout">Cerrar sesión</a>
             </div>
         </li>
     </ul>

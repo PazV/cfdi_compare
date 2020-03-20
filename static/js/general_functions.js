@@ -88,3 +88,20 @@ function hasExtension(inputID, exts) {
     var fileName = document.getElementById(inputID).value;
     return (new RegExp('(' + exts.join('|').replace(/\./g, '\\.') + ')$')).test(fileName);
 }
+
+function validateMail(inputId,errorDiv){
+    var valid=false;
+    var val=$(inputId)[0].value;
+    var patt=/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (patt.exec(val)==null){
+        $(inputId).removeClass("valid-field").addClass("invalid-field");
+        $(errorDiv).removeClass("hide-error").addClass("show-error");
+        $(errorDiv).html("Debe ingresar una dirección de correo válida.");
+    }
+    else{
+        $(inputId).removeClass("invalid-field").addClass("valid-field");
+        $(errorDiv).removeClass("show-error").addClass("hide-error");
+        valid=true;
+    }
+    return valid;
+}

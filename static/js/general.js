@@ -35,13 +35,14 @@ function getHomeCompanies(user_id){
             if (res.success){
                 cont=0;
                 for (var x of res.data){
+                    console.log(x);
                     var active="";
                     if (cont==0){
                         active='active';
                     }
                     $("#companies_carrousel_ol").append('<li data-target="#carouselCompanies" data-slide-to="'+cont+'" class="'+active+'"></li>')
                     cont++;
-                    $("#companies_carousel_div_items").append('<div class="carousel-item '+active+'"><div class="carousel-item-size" style="background-color:'+hex_colors[cont]+';"><a href="/company/1" ><span class="span-company-name">'+x['name']+'</span></a><a href="/company/1"><img src="/static/images/building.png" width="200" height="200" class="carousel-image-align"/></a></div></div>');
+                    $("#companies_carousel_div_items").append('<div class="carousel-item '+active+'"><div class="carousel-item-size" style="background-color:'+hex_colors[cont]+';"><a href="/company/'+x['company_id']+'" ><span class="span-company-name">'+x['name']+'</span></a><a href="/company/'+x['company_id']+'"><img src="/static/images/building.png" width="200" height="200" class="carousel-image-align"/></a></div></div>');
 
                 }
             }

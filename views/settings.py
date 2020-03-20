@@ -3,8 +3,9 @@ from flask import Flask, render_template, flash, redirect, url_for, session, req
 from passlib.hash import sha256_crypt
 from functools import wraps
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 import logging
-# from .login import is_logged_in
+from .login import is_logged_in
 import json
 import sys
 import traceback
@@ -12,23 +13,25 @@ import os
 from .db_connection import getDB
 db = getDB()
 from flask import current_app as app
+import copy
 from . import general_functions
 GF = general_functions.GeneralFunctions()
+import app_config as cfg
 
 bp = Blueprint('settings', __name__, url_prefix='/settings')
 
 @bp.route('/users')
-# @is_logged_in
+@is_logged_in
 def users():
     return render_template('users.html', g=g)
 
 @bp.route('/companies')
-# @is_logged_in
+@is_logged_in
 def companies():
     return render_template('companies.html', g=g)
 
 @bp.route('/saveCompany', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def saveCompany():
     response={}
     try:
@@ -63,7 +66,7 @@ def saveCompany():
     return json.dumps(response)
 
 @bp.route('/getCompanies', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def getCompanies():
     response={}
     try:
@@ -97,7 +100,7 @@ def getCompanies():
     return json.dumps(response)
 
 @bp.route('/getAllCompanies', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def getAllCompanies():
     response={}
     try:
@@ -123,7 +126,7 @@ def getAllCompanies():
     return json.dumps(response)
 
 @bp.route('/getUsers', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def getUsers():
     response={}
     try:
@@ -151,6 +154,58 @@ def getUsers():
         else:
             response['success']=False
             response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+    except:
+        response['success']=False
+        response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
+        app.logger.info(traceback.format_exc(sys.exc_info()))
+    return json.dumps(response)
+
+@bp.route('/saveUser', methods=['GET','POST'])
+@is_logged_in
+def saveUser():
+    response={}
+    try:
+        if request.method=='POST':
+            valid,data=GF.getDict(request.form,'post')
+            if valid:
+                data['email']=data['email'].lower()
+                data['email']=data['email'].strip()
+                user_data=copy.deepcopy(data)
+                if data['user_id']==-1: #nuevo usuario
+                    mail_exists=db.query("""
+                        select count(*) from system.user where
+                        email='%s'
+                    """%data['email']).dictresult()[0]['count']
+                    mail_exists=0
+                    if mail_exists==0:
+                        del user_data['user_id']
+                        passwd_success,passwd=GF.generateRandomPassword(7)
+                        if passwd_success:
+                            user_data['password']=generate_password_hash(passwd)
+                            user_data['created']='now()'
+                            user_data['enabled']=True
+                            new_user=db.insert('system.user',user_data)
+                            mail_body='Se ha registrado al usuario %s. <br><br> <b>Correo:</b> %s, <br> <b>Contraseña:</b> %s<br><br><a href="%s">Acceder</a>'%(new_user['name'],new_user['email'],passwd,cfg.host)
+                            GF.sendMail('Nuevo usuario',mail_body,user_data['email'])
+                            if user_data['companies']!='':
+                                companies=user_data['companies'].split(",")
+                                for x in companies:
+                                    db.insert('system.user_company',{'user_id':new_user['user_id'],'company_id':x.split("_")[1],'added':'now()'})
+                            response['success']=True
+                            response['msg_response']='El usuario ha sido creado.'
+                        else:
+                            response['success']=False
+                            response['msg_response']='Ocurrió un error al momento de generar la contraseña, favor de intentarlo de nuevo.'
+                    else:
+                        response['success']=False
+                        response['msg_response']='El correo ingresado ya se encuentra registrado.'
+                # else: #editar usuario
+            else:
+                response['success']=False
+                response['msg_response']='Ocurrió un error al intentar validar la información.'
+        else:
+            response['suceess']=False
+            response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
     except:
         response['success']=False
         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'

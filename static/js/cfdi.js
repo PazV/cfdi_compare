@@ -1,19 +1,21 @@
 $(document).ready(function(){
     var me = this;
+    this.user_info=JSON.parse($("#spnSession")[0].textContent);
 
-    if (window.location.pathname.includes('/cfdi/load-company-file')){
+    if (window.location.pathname.includes('/load-company-file')){
         getYears("#selCFYears");
     }
-    if (window.location.pathname.includes('/cfdi/load-sat-file')){
+    if (window.location.pathname.includes('/load-sat-file')){
         getYears("#selSFYears");
     }
-    if (window.location.pathname.includes('/cfdi/compare')){
+    if (window.location.pathname.includes('/compare')){
         getYears("#selComparingYears");
     }
 
-    if (window.location.pathname.includes('/cfdi/month-detail')){
+    if (window.location.pathname.includes('/month-detail')){
         getYears("#selYearsMonthDetail");
     }
+    console.log(this.user_info);
 
     $("#company_file").on('change',function(){
         var path=$("#company_file")[0].value.split("\\").pop();
@@ -61,6 +63,7 @@ $(document).ready(function(){
         this.blur();
     });
 
+    //cargar información de la empresa
     $("#btnLoadCompanyInfo").click(function(){
         $("#company_file").focusout();
         if( $("#company_file").siblings('label').hasClass('valid-file-field')){
@@ -72,7 +75,7 @@ $(document).ready(function(){
             $.ajax({
                 url:'/cfdi/checkCompanyExistingRecords',
                 type:'POST',
-                data:JSON.stringify({'company_id':2,'month':$("#selCFMonths").find("option:selected").attr("name"),'year':$("#selCFYears").find("option:selected").attr("name")}),
+                data:JSON.stringify({'company_id':me.company_factor,'month':$("#selCFMonths").find("option:selected").attr("name"),'year':$("#selCFYears").find("option:selected").attr("name")}),
                 success:function(response){
                     try{
                         var res=JSON.parse(response);

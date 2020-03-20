@@ -4,7 +4,7 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 from werkzeug.utils import secure_filename
 import logging
-# from .login import is_logged_in
+from .login import is_logged_in
 import json
 import sys
 import traceback
@@ -29,34 +29,69 @@ import csv
 
 bp = Blueprint('cfdi', __name__, url_prefix='/cfdi' )
 
-@bp.route('/load-company-file')
-# @is_logged_in
-def loadCompanyFile():
+@bp.route('/<int:company_id>/load-company-file')
+@is_logged_in
+def loadCompanyFile(company_id):
+    c_id=company_id/cfg.company_factor
+    company_name=db.query("""
+        select name from system.company where company_id=%s
+    """%c_id).dictresult()[0]['name']
+    g=GF.userInfo([{'company_factor':company_id},{'company':company_name}])
+    g.company=company_name
+    g.company_factor=company_id
     return render_template('load_company_file.html',g=g)
 
-@bp.route('/load-sat-file')
-# @is_logged_in
-def loadSatFile():
+@bp.route('/<int:company_id>/load-sat-file')
+@is_logged_in
+def loadSatFile(company_id):
+    c_id=company_id/cfg.company_factor
+    company_name=db.query("""
+        select name from system.company where company_id=%s
+    """%c_id).dictresult()[0]['name']
+    g=GF.userInfo([{'company_factor':company_id},{'company':company_name}])
+    g.company=company_name
+    g.company_factor=company_id
     return render_template('load_sat_file.html', g=g)
 
-@bp.route('/compare')
-# @is_logged_in
-def compareRecords():
+@bp.route('/<int:company_id>/compare')
+@is_logged_in
+def compareRecords(company_id):
+    c_id=company_id/cfg.company_factor
+    company_name=db.query("""
+        select name from system.company where company_id=%s
+    """%c_id).dictresult()[0]['name']
+    g=GF.userInfo([{'company_factor':company_id},{'company':company_name}])
+    g.company=company_name
+    g.company_factor=company_id
     return render_template('compare_records.html', g=g)
 
-@bp.route('/my-progress')
-# @is_logged_in
-def comparingProgress():
+@bp.route('/<int:company_id>/my-progress')
+@is_logged_in
+def comparingProgress(company_id):
+    c_id=company_id/cfg.company_factor
+    company_name=db.query("""
+        select name from system.company where company_id=%s
+    """%c_id).dictresult()[0]['name']
+    g=GF.userInfo([{'company_factor':company_id},{'company':company_name}])
+    g.company=company_name
+    g.company_factor=company_id
     return render_template('comparing_progress.html', g=g)
 
-@bp.route('/month-detail/<year>/<month>')
-# @is_logged_in
-def monthDetail(year,month):
+@bp.route('/<int:company_id>/month-detail/<year>/<month>')
+@is_logged_in
+def monthDetail(year,month,company_id):
+    c_id=company_id/cfg.company_factor
+    company_name=db.query("""
+        select name from system.company where company_id=%s
+    """%c_id).dictresult()[0]['name']
+    g=GF.userInfo([{'company_factor':company_id},{'company':company_name}])
+    g.company=company_name
+    g.company_factor=company_id
     return render_template('progress_month_detail.html',g=g)
 
 
 @bp.route('/createLoadingFormat', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def createLoadingFormat():
     response={}
     try:
@@ -91,7 +126,7 @@ def createLoadingFormat():
     return json.dumps(response)
 
 @bp.route('/downloadFile/<filename>', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def downloadFile(filename):
     response={}
     try:
@@ -105,20 +140,22 @@ def downloadFile(filename):
         return json.dumps(response)
 
 @bp.route('/checkCompanyExistingRecords', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def checkCompanyExistingRecords():
     response={}
     try:
         if request.method=='POST':
             valid,data=GF.getDict(request.form,'post')
+            g=GF.userInfoWCompany({'company_factor':data['company_id']})
             if valid:
                 response['success']=True
+                company_id=data['company_id']/cfg.company_factor
                 exists=db.query("""
                     select *
                     from system.company_cfdi_my_rel
                     where year=%s
                     and company_id=%s
-                """%(data['year'],data['company_id'])).dictresult()
+                """%(data['year'],company_id)).dictresult()
                 if exists!=[]:
                     months=eval(exists[0]['months'])
                     if months[data['month']]==True:
@@ -134,20 +171,24 @@ def checkCompanyExistingRecords():
         else:
             response['success']=False
             response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+            g=GF.userInfo()
     except:
         response['success']=False
         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
         app.logger.info(traceback.format_exc(sys.exc_info()))
-    return json.dumps(response)
+        g=GF.userInfo()
+    return json.dumps(response,g=g)
 
 @bp.route('/loadCompanyInfo', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def loadCompanyInfo():
     response={}
     try:
         if request.method=='POST':
             # valid,data=GF.getDict(request.form,'post')
             data=request.form.to_dict()
+            g=GF.userInfoWCompany({'company_factor':data['company_id']})
+            company_id=data['company_id']/cfg.company_factor
             files=request.files
             file_path=cfg.path_for_downloads
             file=files[data['file_name']]
@@ -171,7 +212,7 @@ def loadCompanyInfo():
             register_exists=db.query("""
                 select * from system.company_cfdi_my_rel
                 where company_id=%s and year=%s
-            """%(data['company_id'],data['year'])).dictresult()
+            """%(company_id,data['year'])).dictresult()
             if data['exists']=='create':
                 #crear tabla
                 db.query("""
@@ -188,12 +229,12 @@ def loadCompanyInfo():
                         estatus text not null default '',
                         fecha_cancelacion timestamp without time zone not null default '1900-01-01 00:00:00'
                     );
-                """%(data['company_id'],data['month'],data['year']))
+                """%(company_id,data['month'],data['year']))
 
                 #inserta los registros a la tabla correspondiente
                 for c in cfdi_list:
                     c['estatus']=str(c['estatus']).lower()
-                    db.insert('company_cfdi.c_%s_%s_%s'%(data['company_id'],data['month'],data['year']),c)
+                    db.insert('company_cfdi.c_%s_%s_%s'%(company_id,data['month'],data['year']),c)
 
                 if register_exists==[]: #si no existe registro, se crea uno
                     months={
@@ -211,7 +252,7 @@ def loadCompanyInfo():
                     months[data['month']]=True
                     updated[data['month']]=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     rel_reg={
-                        'company_id':data['company_id'],
+                        'company_id':company_id,
                         'year':data['year'],
                         'months':str(months),
                         'updated':str(updated)
@@ -228,7 +269,7 @@ def loadCompanyInfo():
                         set months='%s',
                         updated='%s'
                         where company_id=%s and year=%s
-                    """%(str(months).replace("'","''"),str(updated).replace("'","''"),data['company_id'],data['year']))
+                    """%(str(months).replace("'","''"),str(updated).replace("'","''"),company_id,data['year']))
 
                 response['msg_response']='Los registros han sido guardados.'
 
@@ -236,17 +277,17 @@ def loadCompanyInfo():
                 #obtener el id del último registro de la tabla
                 last_id=db.query("""
                     select max(c_id) from company_cfdi.c_%s_%s_%s
-                """%(data['company_id'],data['month'],data['year'])).dictresult()[0]['max']
+                """%(company_id,data['month'],data['year'])).dictresult()[0]['max']
 
                 #inserta los registros a la tabla correspondiente
                 for c in cfdi_list:
                     c['estatus']=str(c['estatus']).lower()
-                    db.insert('company_cfdi.c_%s_%s_%s'%(data['company_id'],data['month'],data['year']),c)
+                    db.insert('company_cfdi.c_%s_%s_%s'%(company_id,data['month'],data['year']),c)
 
                 #elimina datos de la tabla
                 db.query("""
                     delete from company_cfdi.c_%s_%s_%s where c_id < %s
-                """%(data['company_id'],data['month'],data['year'],int(last_id)+1))
+                """%(company_id,data['month'],data['year'],int(last_id)+1))
 
                 updated=eval(register_exists[0]['updated'])
                 updated[data['month']]=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -254,7 +295,7 @@ def loadCompanyInfo():
                     update system.company_cfdi_my_rel
                     set updated='%s'
                     where company_id=%s and year=%s
-                """%(str(updated).replace("'","''"),data['company_id'],data['year']))
+                """%(str(updated).replace("'","''"),company_id,data['year']))
 
                 response['msg_response']='Los registros han sido reemplazados.'
             response['success']=True
@@ -262,14 +303,16 @@ def loadCompanyInfo():
         else:
             response['success']=False
             response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+            g=GF.userInfo()
     except:
         response['success']=False
         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
         app.logger.info(traceback.format_exc(sys.exc_info()))
-    return json.dumps(response)
+        g=GF.userInfo()
+    return json.dumps(response,g=g)
 
 @bp.route('/checkSatExistingRecords', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def checkSatExistingRecords():
     response={}
     try:
@@ -306,7 +349,7 @@ def checkSatExistingRecords():
 
 
 @bp.route('/loadSatInfo', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def loadSatInfo():
     response={}
     try:
@@ -449,7 +492,7 @@ def loadSatInfo():
     return json.dumps(response)
 
 @bp.route('/checkDataToCompare', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def checkDataToCompare():
     response={}
     try:
@@ -495,7 +538,7 @@ def checkDataToCompare():
     return json.dumps(response)
 
 @bp.route('/doComparison', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def doComparison():
     response={}
     try:
@@ -762,7 +805,7 @@ def doComparison():
     return json.dumps(response)
 
 @bp.route('/getMonthsProgress', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def getMonthsProgress():
     response={}
     try:
@@ -833,7 +876,7 @@ def getMonthsProgress():
     return json.dumps(response)
 
 @bp.route('/getMonthDetailInfo', methods=['GET','POST'])
-# @is_logged_in
+@is_logged_in
 def getMonthDetailInfo():
     response={}
     try:

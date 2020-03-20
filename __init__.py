@@ -47,7 +47,8 @@ def create_app(test_config=None):
     app.register_blueprint(settings.bp)
     from views import company
     app.register_blueprint(company.bp)
-
+    from views import login
+    app.register_blueprint(login.bp)
     app.add_url_rule('/home', endpoint='home.home')
     app.add_url_rule('/', endpoint='home.home')
 

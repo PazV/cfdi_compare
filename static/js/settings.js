@@ -103,6 +103,9 @@ $(document).ready(function(){
 
     $("#frmUser .form-control").focusout(function(){
         validate=emptyField("#"+this.id,"#spn"+this.id);
+        if (validate===true && this.id=='txtUserEmail'){
+            validateMail("#txtUserEmail","#spntxtUserEmail");
+        }
     });
 
     $("#btnSaveUser").click(function(){
@@ -110,10 +113,17 @@ $(document).ready(function(){
         if ($("#txtUserName").hasClass('valid-field') && $("#txtUserEmail")){
             var frm = getForm("#frmUser");
             frm['user_id']=$("#win_new_user").data('user_id');
+            if ($("#win_new_user").data('ids')==undefined){
+                frm['companies']=''
+            }
+            else{
+                frm['companies']=$("#win_new_user").data('ids');
+            }
+            console.log(frm);
             $.ajax({
                 url:'/settings/saveUser',
                 type:'POST',
-                data:JSON.stringify(data),
+                data:JSON.stringify(frm),
                 success:function(response){
                     try{
                         var res=JSON.parse(response);
@@ -162,6 +172,11 @@ $(document).ready(function(){
     $("#win_new_user").on('show.bs.modal',function(){
         $(".div-companies-fieldset").empty();
     });
+
+    $("#win_new_user").on('hide.bs.modal',function(){
+        resetForm("#frmUser",["input|INPUT"]);
+        $(".div-companies-fieldset").empty();
+    })
 
 
 
