@@ -1,0 +1,53 @@
+<div class="modal fade" id="win_my_account" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-header-footer">
+                <span class="mod-header-title">Mi cuenta</span>
+                <button type="button" class="btn-close-modal btn- btn-danger" data-dismiss="modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmMyAccount">
+                    <div class="form-group row no-space-div">
+                        <label for="txtMAuserName" class="col-sm-2 col-form-label">Nombre: </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="name" id="txtMAuserName"/>
+                        </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <span class="col-sm-10 spn-error-msg hide-error" id="spntxtMAuserName"></span>
+                    </div>
+                    <div class="form-group row no-space-div">
+                        <label for="txtMAoldPassword" class="col-sm-5 col-form-label">Contraseña anterior: </label>
+                        <div class="col-sm-6">
+                            <input type="password" class="form-control" name="old_password" id="txtMAoldPassword"/>
+                        </div>
+                        <div class="form-check check-margin-pass">
+                            <input class="form-check-input" type="checkbox" value="" id="check_old_password"/>
+                            <label class="form-check-label" for="check_old_password"><i class="far fa-eye"></i></label>
+                        </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <span class="col-sm-10 spn-error-msg hide-error" id="spntxtMAoldPassword">Error</span>
+                    </div>
+                    <div class="form-group row no-space-div">
+                        <label for="txtMAnewPassword" class="col-sm-4 col-form-label">Contraseña nueva: </label>
+                        <div class="col-sm-7">
+                            <input type="password" class="form-control" name="new_password" id="txtMAnewPassword"/>
+                        </div>
+                        <div class="form-check check-margin-pass">
+                            <input class="form-check-input" type="checkbox" value="" id="check_new_password"/>
+                            <label class="form-check-label" for="check_new_password"><i class="far fa-eye"></i></label>
+                        </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <span class="col-sm-10 spn-errpr-msg hide-error" id="spntxtMAnewPassword">Error</span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer modal-header-footer">
+                <button class="btn btn-outline-dark" type="button" data-toggle="tooltip" title="Guardar cambios" id="btnSaveUserChanges"><i class="far fa-save"></i><span class="sidebar-show-icon"> Guardar</span></button>
+                <button class="btn btn-outline-dark close-modal" type="button" data-toggle="tooltip" title="Salir sin guardar"><i class="fas fa-times"></i><span class="sidebar-show-icon"> Salir</span></button>
+            </div>
+        </div>
+    </div>
+</div>

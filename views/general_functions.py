@@ -128,16 +128,17 @@ class GeneralFunctions:
 
     def userInfoWCompany(self,extras=None):
         user_info=db.query("""
-            select user_id,profile_picture_class,workspace_id
+            select user_id,name,role
             from system.user where user_id=%s
         """%session['user_id']).dictresult()[0]
+        company_id=int(extras[0]['company_factor'])/int(cfg.company_factor)
         company_name=db.query("""
             select name from system.company where company_id=%s
-        """%extra[0]['company_factor']/cfg.company_factor)
+        """%company_id).dictresult()
         if extras!=None:
             for x in extras:
                 user_info.update(x)
         user_info.update({'company':company_name[0]['name']})
         g.user_info=json.dumps(user_info)
-        
+
         return g

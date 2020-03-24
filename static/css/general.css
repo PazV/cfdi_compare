@@ -127,7 +127,13 @@ body{
     display: none;
 }
 
+.hide-sidebar-element{
+    display:none;
+}
 
+.show-sidebar-element{
+    display:block;
+}
 
 
 /*--------------------BODY-------------------*/

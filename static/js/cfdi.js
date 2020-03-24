@@ -65,6 +65,7 @@ $(document).ready(function(){
 
     //cargar información de la empresa
     $("#btnLoadCompanyInfo").click(function(){
+        console.log(me.user_info);
         $("#company_file").focusout();
         if( $("#company_file").siblings('label').hasClass('valid-file-field')){
             EasyLoading.show({
@@ -75,7 +76,7 @@ $(document).ready(function(){
             $.ajax({
                 url:'/cfdi/checkCompanyExistingRecords',
                 type:'POST',
-                data:JSON.stringify({'company_id':me.company_factor,'month':$("#selCFMonths").find("option:selected").attr("name"),'year':$("#selCFYears").find("option:selected").attr("name")}),
+                data:JSON.stringify({'company_id':me.user_info.company_factor,'month':$("#selCFMonths").find("option:selected").attr("name"),'year':$("#selCFYears").find("option:selected").attr("name")}),
                 success:function(response){
                     try{
                         var res=JSON.parse(response);
@@ -84,7 +85,8 @@ $(document).ready(function(){
                     }
                     if (res.success){
                         var data = new FormData();
-                        data.append('company_id',2); //valor de company_id temporal
+                        // data.append('company_id',2); //valor de company_id temporal
+                        data.append('company_id',me.user_info.company_factor);
                         data.append('month',$("#selCFMonths").find("option:selected").attr("name"));
                         data.append('year',$("#selCFYears").find("option:selected").attr("name"));
                         var file = $("#company_file")[0].files[0];
@@ -251,7 +253,8 @@ $(document).ready(function(){
             $.ajax({
                 url:'/cfdi/checkSatExistingRecords',
                 type:'POST',
-                data:JSON.stringify({'company_id':2,'month':$("#selSFMonths").find("option:selected").attr("name"),'year':$("#selSFYears").find("option:selected").attr("name")}),
+                data:JSON.stringify({'company_id':me.user_info.company_factor,'month':$("#selSFMonths").find("option:selected").attr("name"),'year':$("#selSFYears").find("option:selected").attr("name")}),
+                // data:JSON.stringify({'company_id':2,'month':$("#selSFMonths").find("option:selected").attr("name"),'year':$("#selSFYears").find("option:selected").attr("name")}),
                 success:function(response){
                     try{
                         var res=JSON.parse(response);
@@ -260,7 +263,8 @@ $(document).ready(function(){
                     }
                     if (res.success){
                         var data = new FormData();
-                        data.append('company_id',2);
+                        // data.append('company_id',2);
+                        data.append('company_id',me.user_info.company_factor);
                         data.append('month',$("#selSFMonths").find("option:selected").attr("name"));
                         data.append('year',$("#selSFYears").find("option:selected").attr("name"));
                         var file = $("#sat_file")[0].files[0];
@@ -496,7 +500,8 @@ $(document).ready(function(){
         var data={};
         data['month']=$("#selComparingMonth").find("option:selected").attr("name");
         data['year']=$("#selComparingYears").find("option:selected").attr("name");
-        data['company_id']=2;
+        // data['company_id']=2;
+        data['company_id']=me.user_info.company_factor;
         EasyLoading.show({
             text:'Cargando... (Esto puede demorar unos minutos)',
             type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]

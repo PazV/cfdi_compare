@@ -65,3 +65,7 @@
 span.spn-company-fieldset > i{
     color:#7b7b7b !important;
 }
+
+.check-margin-pass{
+    margin:auto 0 auto -8px;
+}

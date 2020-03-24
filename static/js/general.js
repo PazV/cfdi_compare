@@ -1,5 +1,6 @@
 $(document).ready(function(){
     var me = this;
+    this.user_info=JSON.parse($("#spnSession")[0].textContent);
     $("#btnOpenSatLink").click(function(){
         // window.open("https://www.sat.gob.mx/personas/factura-electronica","_blank","width=400,height=350,top=200,left=200");
         window.open("https://www.sat.gob.mx/personas/factura-electronica","_blank");
@@ -13,9 +14,22 @@ $(document).ready(function(){
         $(this).siblings('a').children('i.icon-right-arrow-menu').css('transform','rotate(0deg');
     });
 
-    if (window.location.pathname.includes('/home')){
-        getHomeCompanies(1);
+    if (window.location.pathname.includes('/home') || window.location.pathname.includes('/settings/companies') || window.location.pathname.includes('/settings/users')){
+        if (window.location.pathname.includes('/home')){
+            getHomeCompanies(me.user_info.user_id);
+        }
+        var lis=['sb_li_cargar','sb_li_comparar','sb_li_avance','sb_li_proveedores'];
+        for (var x of lis){
+            $("#"+x).addClass('hide-sidebar-element').removeClass('show-sidebar-element');
+        }
     }
+    else{
+        var lis=['sb_li_cargar','sb_li_comparar','sb_li_avance','sb_li_proveedores'];
+        for (var x of lis){
+            $("#"+x).removeClass('hide-sidebar-element').addClass('show-sidebar-element');
+        }
+    }
+
 
 });
 

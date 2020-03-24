@@ -1,12 +1,13 @@
 $(document).ready(function(){
     var me = this;
-    if (window.location.pathname.includes('/cfdi/my-progress')){
+    this.user_info=JSON.parse($("#spnSession")[0].textContent);
+    if (window.location.pathname.includes('/my-progress')){
         getYears("#selProgYears");
-        getMonthsProgress($("#selProgYears").find("option:selected").attr("name"),2); //año,company_id
+        getMonthsProgress($("#selProgYears").find("option:selected").attr("name"),me.user_info.company_factor); //año,company_id
     }
 
     $("#selProgYears").change(function(){
-        getMonthsProgress($("#selProgYears").find("option:selected").attr("name"),2);
+        getMonthsProgress($("#selProgYears").find("option:selected").attr("name"),me.user_info.company_factor);
     });
 
     $(".a-month-prog").click(function(){
@@ -22,7 +23,7 @@ $(document).ready(function(){
         $("#divMonthDetName").data('year',$("#selProgYears").find("option:selected").attr("name"));
         $("#divMonthDetName").data('month',this.id.substr(-3));
         $("#btnReturnDetail").removeClass('hide-div').addClass('show-div-general');
-        getMonthDetailInfo($("#selProgYears").find("option:selected").attr("name"),this.id.substr(-3),2);
+        getMonthDetailInfo($("#selProgYears").find("option:selected").attr("name"),this.id.substr(-3),me.user_info.company_factor);
     });
 
     $("#btnReturnDetail").click(function(){

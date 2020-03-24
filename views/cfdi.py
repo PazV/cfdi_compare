@@ -146,10 +146,11 @@ def checkCompanyExistingRecords():
     try:
         if request.method=='POST':
             valid,data=GF.getDict(request.form,'post')
-            g=GF.userInfoWCompany({'company_factor':data['company_id']})
             if valid:
+                # g=GF.userInfoWCompany([{'company_factor':data['company_id']}])
                 response['success']=True
-                company_id=data['company_id']/cfg.company_factor
+                app.logger.info(data)
+                company_id=int(data['company_id'])/int(cfg.company_factor)
                 exists=db.query("""
                     select *
                     from system.company_cfdi_my_rel
@@ -171,13 +172,13 @@ def checkCompanyExistingRecords():
         else:
             response['success']=False
             response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
-            g=GF.userInfo()
+            # g=GF.userInfo()
     except:
         response['success']=False
         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
         app.logger.info(traceback.format_exc(sys.exc_info()))
-        g=GF.userInfo()
-    return json.dumps(response,g=g)
+        # g=GF.userInfo()
+    return json.dumps(response)
 
 @bp.route('/loadCompanyInfo', methods=['GET','POST'])
 @is_logged_in
@@ -187,8 +188,8 @@ def loadCompanyInfo():
         if request.method=='POST':
             # valid,data=GF.getDict(request.form,'post')
             data=request.form.to_dict()
-            g=GF.userInfoWCompany({'company_factor':data['company_id']})
-            company_id=data['company_id']/cfg.company_factor
+            # g=GF.userInfoWCompany([{'company_factor':data['company_id']}])
+            company_id=int(data['company_id'])/int(cfg.company_factor)
             files=request.files
             file_path=cfg.path_for_downloads
             file=files[data['file_name']]
@@ -303,13 +304,13 @@ def loadCompanyInfo():
         else:
             response['success']=False
             response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
-            g=GF.userInfo()
+            # g=GF.userInfo()
     except:
         response['success']=False
         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
         app.logger.info(traceback.format_exc(sys.exc_info()))
-        g=GF.userInfo()
-    return json.dumps(response,g=g)
+        # g=GF.userInfo()
+    return json.dumps(response)
 
 @bp.route('/checkSatExistingRecords', methods=['GET','POST'])
 @is_logged_in
@@ -319,13 +320,14 @@ def checkSatExistingRecords():
         if request.method=='POST':
             valid,data=GF.getDict(request.form,'post')
             if valid:
+                company_id=int(data['company_id'])/int(cfg.company_factor)
                 response['success']=True
                 exists=db.query("""
                     select *
                     from system.sat_cfdi_my_rel
                     where year=%s
                     and company_id=%s
-                """%(data['year'],data['company_id'])).dictresult()
+                """%(data['year'],company_id)).dictresult()
                 if exists!=[]:
                     months=eval(exists[0]['months'])
                     if months[data['month']]==True:
@@ -356,6 +358,7 @@ def loadSatInfo():
         if request.method=='POST':
             #obtiene data
             data=request.form.to_dict()
+            company_id=int(data['company_id'])/int(cfg.company_factor)
             #lee archivo
             files=request.files
             file_path=cfg.path_for_downloads
@@ -376,7 +379,7 @@ def loadSatInfo():
             existing_record=db.query("""
                 select * from system.sat_cfdi_my_rel
                 where year=%s and company_id=%s
-            """%(data['year'],data['company_id'])).dictresult()
+            """%(data['year'],company_id)).dictresult()
             if data['exists']=='create':
                 #crear tabla
                 db.query("""
@@ -393,7 +396,7 @@ def loadSatInfo():
                         estatus text not null default '',
                         fecha_cancelacion timestamp without time zone default '1900-01-01 00:00:00'
                     );
-                """%(data['company_id'],data['month'],data['year']))
+                """%(company_id,data['month'],data['year']))
 
                 ##inserta los registros a la tabla correspondiente
                 #lee archivo csv para insertar registros en tabla correspondiente
@@ -406,7 +409,7 @@ def loadSatInfo():
                         if count_row!=0:
                             # app.logger.info(row)
                             row['estatus']=str(row['estatus']).lower()
-                            db.insert('sat_cfdi.sc_%s_%s_%s'%(data['company_id'],data['month'],data['year']),row)
+                            db.insert('sat_cfdi.sc_%s_%s_%s'%(company_id,data['month'],data['year']),row)
                         count_row+=1
 
 
@@ -426,7 +429,7 @@ def loadSatInfo():
                     months[data['month']]=True
                     updated[data['month']]=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     rel_reg={
-                        'company_id':data['company_id'],
+                        'company_id':company_id,
                         'year':data['year'],
                         'months':str(months),
                         'updated':str(updated)
@@ -443,14 +446,14 @@ def loadSatInfo():
                         set months='%s',
                         updated='%s'
                         where company_id=%s and year=%s
-                    """%(str(months).replace("'","''"),str(updated).replace("'","''"),data['company_id'],data['year']))
+                    """%(str(months).replace("'","''"),str(updated).replace("'","''"),company_id,data['year']))
                 response['msg_response']='Los registros han sido guardados.'
 
             elif data['exists']=='replace':
                 #obtener el id del último registro de la tabla
                 last_id=db.query("""
                     select max(sc_id) from sat_cfdi.sc_%s_%s_%s
-                """%(data['company_id'],data['month'],data['year'])).dictresult()[0]['max']
+                """%(company_id,data['month'],data['year'])).dictresult()[0]['max']
 
                 ##inserta los registros a la tabla correspondiente
                 #lee archivo csv para insertar registros en tabla correspondiente
@@ -461,14 +464,14 @@ def loadSatInfo():
                     for row in sreader:
                         if count_row!=0:
                             row['estatus']=str(row['estatus']).lower()
-                            db.insert('sat_cfdi.sc_%s_%s_%s'%(data['company_id'],data['month'],data['year']),row)
+                            db.insert('sat_cfdi.sc_%s_%s_%s'%(company_id,data['month'],data['year']),row)
                         count_row+=1
 
                 #elimina datos anteriores de la tabla
                 db.query("""
                     delete from sat_cfdi.sc_%s_%s_%s
                     where sc_id < %s
-                """%(data['company_id'],data['month'],data['year'],int(last_id)+1))
+                """%(company_id,data['month'],data['year'],int(last_id)+1))
 
                 updated=eval(existing_record[0]['updated'])
                 updated[data['month']]=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -476,7 +479,7 @@ def loadSatInfo():
                     update system.sat_cfdi_my_rel
                     set updated='%s'
                     where company_id=%s and year=%s
-                """%(str(updated).replace("'","''"),data['company_id'],data['year']))
+                """%(str(updated).replace("'","''"),company_id,data['year']))
 
                 response['msg_response']='Los registros han sido actualizados.'
 
@@ -499,19 +502,20 @@ def checkDataToCompare():
         if request.method=='POST':
             valid,data=GF.getDict(request.form,'post')
             if valid:
+                company_id=int(data['company_id'])/int(cfg.company_factor)
                 response['available']=False
                 response['success']=True
                 company=db.query("""
                     select * from system.company_cfdi_my_rel
                     where company_id=%s and year=%s
-                """%(data['company_id'],data['year'])).dictresult()
+                """%(company_id,data['year'])).dictresult()
                 if company!=[]:
                     company_months=eval(company[0]['months'])
                     if company_months[data['month']]==True:
                         sat=db.query("""
                             select * from system.sat_cfdi_my_rel
                             where company_id=%s and year=%s
-                        """%(data['company_id'],data['year'])).dictresult()
+                        """%(company_id,data['year'])).dictresult()
                         if sat!=[]:
                             sat_months=eval(sat[0]['months'])
                             if sat_months[data['month']]==True:
@@ -545,7 +549,8 @@ def doComparison():
         if request.method=='POST':
             valid,data=GF.getDict(request.form,'post')
             if valid:
-                table_name="c_%s_%s_%s"%(data['company_id'],data['month'],data['year'])
+                company_id=int(data['company_id'])/int(cfg.company_factor)
+                table_name="c_%s_%s_%s"%(company_id,data['month'],data['year'])
                 #consulta registros que se encuentran en ambas tablas
                 repeated=db.query("""
                     select a.uuid as a_uuid,
@@ -774,10 +779,10 @@ def doComparison():
                 exists_cd=db.query("""
                     select * from system.comparison_data
                     where year=%s and month='%s' and company_id=%s
-                """%(data['year'],data['month'],data['company_id'])).dictresult()
+                """%(data['year'],data['month'],company_id)).dictresult()
                 if exists_cd==[]:
                     comparison_data={
-                        'company_id':data['company_id'],
+                        'company_id':company_id,
                         'month':data['month'],
                         'year':data['year'],
                         'comparison_date':'now',
@@ -790,7 +795,7 @@ def doComparison():
                         set info='%s',
                         comparison_date='now'
                         where company_id=%s and month='%s' and year=%s
-                    """%(str(comp_info).replace("'","''"),data['company_id'],data['month'],data['year']))
+                    """%(str(comp_info).replace("'","''"),company_id,data['month'],data['year']))
                 response['success']=True
             else:
                 response['success']=False
@@ -812,17 +817,18 @@ def getMonthsProgress():
         if request.method=='POST':
             valid,data=GF.getDict(request.form,'post')
             if valid:
+                company_id=int(data['company_id'])/int(cfg.company_factor)
                 company=db.query("""
                     select months
                     from system.company_cfdi_my_rel
                     where company_id=%s and year=%s
-                """%(data['company_id'],data['year'])).dictresult()
+                """%(company_id,data['year'])).dictresult()
 
                 sat=db.query("""
                     select months
                     from system.sat_cfdi_my_rel
                     where company_id=%s and year=%s
-                """%(data['company_id'],data['year'])).dictresult()
+                """%(company_id,data['year'])).dictresult()
 
                 do_for=False
                 if company!=[] and sat!=[]:
@@ -848,7 +854,7 @@ def getMonthsProgress():
                         comparison=db.query("""
                             select info from system.comparison_data
                             where company_id=%s and year=%s and month='%s'
-                        """%(data['company_id'],data['year'],k)).dictresult()
+                        """%(company_id,data['year'],k)).dictresult()
                         if comparison!=[]:
                             months[k]='a-mp-green'
                         else:
@@ -883,12 +889,13 @@ def getMonthDetailInfo():
         if request.method=='POST':
             valid,data=GF.getDict(request.form,'post')
             if valid:
+                company_id=int(data['company_id'])/int(cfg.company_factor)
                 response['success']=True
                 exists_comparison=db.query("""
                     select * from system.comparison_data
                     where company_id=%s
                     and year=%s and month='%s'
-                """%(data['company_id'],data['year'],data['month'])).dictresult()
+                """%(company_id,data['year'],data['month'])).dictresult()
                 if exists_comparison!=[]:
                     response['comparison']=True
                     response['data']=eval(exists_comparison[0]['info'])
@@ -898,13 +905,13 @@ def getMonthDetailInfo():
                     sat=db.query("""
                         select * from system.sat_cfdi_my_rel
                         where year=%s and company_id=%s
-                    """%(data['year'],data['company_id'])).dictresult()
+                    """%(data['year'],company_id)).dictresult()
                     company=db.query("""
                         select * from system.company_cfdi_my_rel
                         where company_id=%s and year=%s
-                    """%(data['company_id'],data['year'])).dictresult()
+                    """%(company_id,data['year'])).dictresult()
                     resp_info={}
-                    table_name="c_%s_%s_%s"%(data['company_id'],data['month'],data['year'])
+                    table_name="c_%s_%s_%s"%(company_id,data['month'],data['year'])
                     if sat!=[]:
                         sat_months=eval(sat[0]['months'])
                         if sat_months[data['month']]==True:

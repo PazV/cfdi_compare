@@ -21,40 +21,40 @@
                     </div>
                 </div>
             </li>
-            <li class="sidebar-pt-li-elements li-margin-bot-2">
+            <li class="sidebar-pt-li-elements li-margin-bot-2" id="sb_li_cargar">
                 <a class="sidebar-pt-a-elements" href="#div_submenu_cargar" data-toggle="collapse" aria-expanded="false" aria-controls="div_submenu_cargar" aria-haspopup="true"><i class="fas fa-file-upload sidebar-pt-icon"></i> <span class="sidebar-show-icon">Cargar </span><i class="fas fa-caret-right icon-right-arrow-menu"></i></a>
                 <div class="collapse collapse-div-submenu" id="div_submenu_cargar">
                     <div class="card sidebar-submenu-div">
                         <ul class="list-unstyled">
                             <li class="sidebar-submenudiv-li">
-                                <a href="/cfdi/load-sat-file" class="sidebar-submenudiv-a">Archivo meta del SAT</a>
+                                <a href="/cfdi/{{g.company_factor}}/load-sat-file" class="sidebar-submenudiv-a">Archivo meta del SAT</a>
                             </li>
                             <li class="sidebar-submenudiv-li">
-                                <a href="/cfdi/load-company-file" class="sidebar-submenudiv-a">Archivo con información de la empresa</a>
+                                <a href="/cfdi/{{g.company_factor}}/load-company-file" class="sidebar-submenudiv-a">Archivo con información de la empresa</a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </li>
-            <li class="sidebar-pt-li-elements li-margin-bot-1">
+            <li class="sidebar-pt-li-elements li-margin-bot-1" id="sb_li_comparar">
                 <a class="sidebar-pt-a-elements" href="#div_submenu_comparar" data-toggle="collapse" aria-expanded="false" aria-controls="div_submenu_comparar" aria-haspopup="true"><i class="far fa-object-ungroup sidebar-pt-icon"></i> <span class="sidebar-show-icon">Comparar </span><i class="fas fa-caret-right icon-right-arrow-menu"></i></a>
                 <div class="collapse collapse-div-submenu" id="div_submenu_comparar">
                     <div class="card sidebar-submenu-div">
                         <ul class="list-unstyled">
                             <li class="sidebar-submenudiv-li">
-                                <a href="/cfdi/compare" class="sidebar-submenudiv-a">Obtener comparativo</a>
+                                <a href="/cfdi/{{g.company_factor}}/compare" class="sidebar-submenudiv-a">Obtener comparativo</a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </li>
-            <li class="sidebar-pt-li-elements li-margin-bot-1">
+            <li class="sidebar-pt-li-elements li-margin-bot-1" id="sb_li_avance">
                 <a class="sidebar-pt-a-elements" href="#div_submenu_avance" data-toggle="collapse" aria-expanded="false" aria-controls="div_submenu_avance" aria-haspopup="true"><i class="fas fa-calendar-day sidebar-pt-icon"></i> <span class="sidebar-show-icon">Avance </span><i class="fas fa-caret-right icon-right-arrow-menu"></i></a>
                 <div class="collapse collapse-div-submenu" id="div_submenu_avance">
                     <div class="card sidebar-submenu-div">
                         <ul class="list-unstyled">
                             <li class="sidebar-submenudiv-li">
-                                <a href="/cfdi/my-progress" class="sidebar-submenudiv-a">Ver avance</a>
+                                <a href="/cfdi/{{g.company_factor}}/my-progress" class="sidebar-submenudiv-a">Ver avance</a>
                             </li>
                         </ul>
                     </div>
@@ -87,7 +87,7 @@
                     </div>
                 </div>
             </li>
-            <li class="sidebar-pt-li-elements li-margin-bot-1">
+            <li class="sidebar-pt-li-elements li-margin-bot-1" id="sb_li_proveedores">
                 <a class="sidebar-pt-a-elements" href="#div_submenu_suppliers" data-toggle="collapse" aria-expanded="false" aria-controls="div_submenu_suppliers" aria-haspopup="true"><i class="fab fa-searchengin sidebar-pt-icon"></i> <span class="sidebar-show-icon"> Proveedores </span><i class="fas fa-caret-right icon-right-arrow-menu"></i></a>
                 <div class="collapse collapse-div-submenu" id="div_submenu_suppliers">
                     <div class="card sidebar-submenu-div">

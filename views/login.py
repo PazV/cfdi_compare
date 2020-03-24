@@ -36,7 +36,7 @@ def signin():
             password=request.form['password']
             registered_user=db.query("""
                 select * from system.user where
-                email='%s' order by user_id
+                email='%s' and enabled=True order by user_id
             """%email).dictresult()
             if registered_user==[]:
                 error='Usuario no registrado'
@@ -63,7 +63,7 @@ def signin():
                     g.session_id=inserted_session['session_id']
                     session['user_id']=registered_user[0]['user_id']
                     session['session_id']=inserted_session['session_id']
-                    session['name']=inserted_session['name']
+                    # session['name']=inserted_session['name']
                     session['logged_in']=True
                     return redirect(url_for('home.home'))
         return render_template('login.html',error=error)

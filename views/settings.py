@@ -23,11 +23,21 @@ bp = Blueprint('settings', __name__, url_prefix='/settings')
 @bp.route('/users')
 @is_logged_in
 def users():
+    user_info=db.query("""
+        select user_id, name, role from system.user where user_id=%s
+    """%session['user_id']).dictresult()[0]
+    g.user_info=json.dumps(user_info)
+    g.name=user_info['name']
     return render_template('users.html', g=g)
 
 @bp.route('/companies')
 @is_logged_in
 def companies():
+    user_info=db.query("""
+        select user_id, name, role from system.user where user_id=%s
+    """%session['user_id']).dictresult()[0]
+    g.user_info=json.dumps(user_info)
+    g.name=user_info['name']
     return render_template('companies.html', g=g)
 
 @bp.route('/saveCompany', methods=['GET','POST'])
@@ -211,3 +221,29 @@ def saveUser():
         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
         app.logger.info(traceback.format_exc(sys.exc_info()))
     return json.dumps(response)
+
+# @bp.route('/getAccountInfo', methods=['GET','POST'])
+# @is_logged_in
+# def getAccountInfo():
+#     response={}
+#     try:
+#         if request.method=='POST':
+#             valid,data=GF.getDict(request.form,'post')
+#             if valid:
+#                 name=db.query("""
+#                     select name from system.user where
+#                     user_id=%s
+#                 """%data['user_id']).dictresult()[0]['name']
+#                 response['success']=True
+#                 response['data']=name
+#             else:
+#                 response['success']=False
+#                 response['msg_response']='No es posible obtener los datos del usuario por el momento.'
+#         else:
+#             response['success']=False
+#             response['msg_response']='Ocurrió un error al intentar validar la información.'
+#     except:
+#         response['success']=False
+#         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+#         app.logger.info(traceback.format_exc(sys.exc_info()))
+#     return json.dumps(response)
