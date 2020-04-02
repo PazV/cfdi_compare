@@ -1,9 +1,10 @@
 $(document).ready(function(){
     var me = this;
     this.user_info=JSON.parse($("#spnSession")[0].textContent);
-    console.log(this.user_info);
+
     if (window.location.pathname.includes('/settings/companies')){
-        getCompanies(1);
+        // getCompanies(1);
+        getCompanies(me.user_info.user_id);
     }
 
     if (window.location.pathname.includes('/settings/users')){
@@ -21,7 +22,7 @@ $(document).ready(function(){
     });
 
     $("#frmCompany .form-control").focusout(function(){
-        console.log(this.id);
+
         validate=emptyField("#"+this.id,"#spn"+this.id);
     });
 
@@ -30,7 +31,7 @@ $(document).ready(function(){
         if ($("#txtCompanyRfc").hasClass('valid-field') && $("#txtCompanyName").hasClass('valid-field')){
             var frm = getForm("#frmCompany");
             frm['company_id']=$("#win_new_company").data('company_id');
-            console.log(frm);
+
             $.ajax({
                 url:'/settings/saveCompany',
                 type:'POST',
@@ -50,7 +51,8 @@ $(document).ready(function(){
                                 confirm:{
                                     text:'Aceptar',
                                     action:function(){
-                                        getCompanies(1);
+                                        // getCompanies(1);
+                                        getCompanies(me.user_info.user_id);
                                         $("#win_new_company").modal("hide");
                                     }
                                 }
@@ -92,9 +94,21 @@ $(document).ready(function(){
                     ajaxError();
                 }
                 if (res.success){
+                    var ids=[];
+                    if ($("#win_new_user").data('ids')!=undefined && $("#win_new_user").data('ids')!=''){
+                        ids=$("#win_new_user").data('ids').split(",");
+                        for (var i in ids){
+                            ids[i]=parseInt(ids[i].split("_")[1]);
+                        }
+                    }
                     for (var x of res.data){
                         var id='comp_'+x['company_id'];
-                        $("#divSelectCompanies").append('<div class="form-check"><input class="form-check-input" type="checkbox" value="" id="'+id+'"/><label class="form-check-label" for="'+id+'">'+x['name']+'</label></div>');
+                        if (ids.includes(x['company_id'])){
+                            $("#divSelectCompanies").append('<div class="form-check"><input class="form-check-input" type="checkbox" checked="true" id="'+id+'"/><label class="form-check-label" for="'+id+'">'+x['name']+'</label></div>');
+                        }
+                        else{
+                            $("#divSelectCompanies").append('<div class="form-check"><input class="form-check-input" type="checkbox" value="" id="'+id+'"/><label class="form-check-label" for="'+id+'">'+x['name']+'</label></div>');
+                        }
                     }
                 }
             }
@@ -120,7 +134,6 @@ $(document).ready(function(){
             else{
                 frm['companies']=$("#win_new_user").data('ids');
             }
-            console.log(frm);
             $.ajax({
                 url:'/settings/saveUser',
                 type:'POST',
@@ -162,8 +175,7 @@ $(document).ready(function(){
         var checks = $("#frmSelectCompanies").find("input[type=checkbox]:checked");
         var check_list=[];
         for (var x of checks){
-            console.log(x);
-            $(".div-companies-fieldset").append('<span class="spn-company-fieldset"><i class="far fa-building"></i> '+x['labels'][0].textContent+'</span>');
+            $(".div-companies-fieldset").append('<span class="spn-company-fieldset"><i class="far fa-building" data-company=""></i> '+x['labels'][0].textContent+'</span>');
             check_list.push(x.id);
         }
         $("#win_new_user").data('ids',String(check_list));
@@ -177,44 +189,246 @@ $(document).ready(function(){
     $("#win_new_user").on('hide.bs.modal',function(){
         resetForm("#frmUser",["input|INPUT"]);
         $(".div-companies-fieldset").empty();
+        $("#win_new_user").data('ids','');
+        $("#win_new_user").data('user_id','');
     });
 
     $("#win_my_account").on('show.bs.modal',function(){
         $("#txtMAuserName").val(me.user_info.name);
-        // $.ajax({
-        //     url:'/settings/getAccountInfo',
-        //     type:'POST',
-        //     data:JSON.stringify({'user_id':me.user_info.user_id}),
-        //     success:function(response){
-        //         try{
-        //             var res=JSON.parse(response);
-        //         }catch(err){
-        //             ajaxError();
-        //         }
-        //         if (res.success){
-        //             $("#txtMAuserName").html(res.data.name);
-        //         }
-        //         else{
-        //             $.alert({
-        //                 theme:'dark',
-        //                 title:'Atención',
-        //                 content:res.msg_response
-        //             });
-        //         }
-        //     },
-        //     error:function(){
-        //         $.alert({
-        //             theme:'dark',
-        //             title:'Atención',
-        //             content:'Ocurrió un error, favor de intentarlo de nuevo.'
-        //         });
-        //     }
-        // });
+        $("#win_my_account").data('user_id',me.user_info.user_id);
     });
 
+    $("#check_old_password").on('change',function(){
+        if ($(this)[0].checked===true){
+            $("#txtMAoldPassword").attr("type","text");
+        }
+        else{
+            $("#txtMAoldPassword").attr("type","password");
+        }
+    });
 
+    $("#check_new_password").on('change',function(){
+        if ($(this)[0].checked===true){
+            $("#txtMAnewPassword").attr("type","text");
+        }
+        else{
+            $("#txtMAnewPassword").attr("type","password");
+        }
+    });
 
+    $("#frmMyAccount .form-control").on('focusout',function(){
+        validate=emptyField("#"+this.id,"#spn"+this.id);
+    });
 
+    $("#btnSaveUserChanges").click(function(){
+        $("#frmMyAccount .form-control").focusout();
+        var form_input=$("#frmMyAccount .form-control");
+        var valid=true;
+        for (var x in form_input){
+            if ($("#"+form_input[x].id).hasClass('invalid-field')){
+                valid=false;
+            }
+        }
+        var data=getForm("#frmMyAccount");
+        data['user_id']=$("#win_my_account").data('user_id');
+        EasyLoading.show({
+            text:'Cargando...',
+            type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]
+        });
+        $.ajax({
+            url:'/settings/changeMyAccount',
+            type:'POST',
+            data:JSON.stringify(data),
+            success:function(response){
+                try{
+                    var res=JSON.parse(response);
+                }catch(err){
+                    ajaxError();
+                }
+                EasyLoading.hide();
+                if (res.success){
+                    $.alert({
+                        theme:'dark',
+                        title:'Atención',
+                        content:res.msg_response,
+                        buttons:{
+                            confirm:{
+                                text:'Aceptar',
+                                action:function(){
+                                    $("#win_my_account").modal("hide");
+                                }
+                            }
+                        }
+                    });
+                }
+                else{
+                    $.alert({
+                        theme:'dark',
+                        title:'Atención',
+                        content:res.msg_response
+                    });
+                }
+            },
+            error:function(){
+                EasyLoading.hide();
+                $.alert({
+                    theme:'dark',
+                    title:'Atención',
+                    content:'Ocurrió un error, favor de intentarlo de nuevo.'
+                });
+            }
+        });
+    });
+
+    $("#btnEditCompany").click(function(){
+        var table=$("#grdCompanies").DataTable();
+        if (table.rows('.selected').any()){
+            var ind=table.row('.selected').index();
+            var record=table.rows(ind).data()[0];
+            $("#win_new_company").data('company_id',record['company_id']);
+            $("#txtCompanyName").val(record['name']);
+            $("#txtCompanyRfc").val(record['rfc']);
+            $("#win_new_company").modal("show");
+        }
+        else{
+            $.alert({
+                theme:'dark',
+                title:'Atención',
+                content:'Debes seleccionar una empresa para editarla.'
+            });
+        }
+    });
+
+    $("#btnDisableCompany").click(function(){
+        var table=$("#grdCompanies").DataTable();
+        if (table.rows('.selected').any()){
+            var ind=table.row('.selected').index();
+            var record=table.rows(ind).data()[0];
+            $.confirm({
+                theme:'dark',
+                title:'Atención',
+                content:'¿Está seguro que desea deshabilitar esta empresa?',
+                buttons:{
+                    confirm:{
+                        text:'Sí',
+                        action:function(){
+                            EasyLoading.show({
+                                text:'Cargando...',
+                                type:EasyLoading.TYPE["BALL_SCALE_RIPPLE_MULTIPLE"]
+                            });
+                            $.ajax({
+                                url:'/settings/disableCompany',
+                                type:'POST',
+                                data:JSON.stringify({'company_id':record['company_id']}),
+                                success:function(response){
+                                    try{
+                                        var res=JSON.parse(response);
+                                    }catch(err){
+                                        ajaxError()
+                                    }
+                                    EasyLoading.hide();
+                                    if (res.success){
+                                        $.alert({
+                                            theme:'dark',
+                                            title:'Atención',
+                                            content:res.msg_response,
+                                            buttons:{
+                                                confirm:{
+                                                    text:'Aceptar',
+                                                    action:function(){
+                                                        getCompanies(me.user_info.user_id);
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else{
+                                        $.alert({
+                                            theme:'dark',
+                                            title:'Atención',
+                                            content:res.msg_response
+                                        });
+                                    }
+                                },
+                                error:function(){
+                                    EasyLoading.hide();
+                                    $.alert({
+                                        theme:'dark',
+                                        title:'Atención',
+                                        content:'Ocurrió un error, favor de intentarlo de nuevo.'
+                                    });
+                                }
+                            });
+                        }
+                    },
+                    cancel:{
+                        text:'No'
+                    }
+                }
+            })
+        }
+        else{
+            $.alert({
+                theme:'dark',
+                title:'Atención',
+                content:'Debe seleccionar una empresa para deshabilitarla.'
+            });
+        }
+    });
+
+    $("#btnEditUser").click(function(){
+        var table=$("#grdUsers").DataTable();
+        if (table.rows('.selected').any()){
+            var ind=table.row('.selected').index();
+            var record=table.rows(ind).data()[0];
+            $("#txtUserName").val(record['name']);
+            $("#txtUserEmail").val(record['email']);
+            $("#win_new_user").data('user_id',record['user_id']);
+            console.log(record);
+            $.ajax({
+                url:'/settings/getUserCompanies',
+                type:'POST',
+                data:JSON.stringify({'user_id':record['user_id']}),
+                success:function(response){
+                    try{
+                        var res=JSON.parse(response);
+                    }catch(err){
+                        ajaxError();
+                    }
+                    if (res.success){
+                        $("#win_new_user").modal("show");
+                        var check_list=[];
+                        for (var x of res.data){
+                            $(".div-companies-fieldset").append('<span class="spn-company-fieldset"><i class="far fa-building" data-company=""></i> '+x['name']+'</span>');
+                            check_list.push('comp_'+x.company_id);
+                        }
+                        $("#win_new_user").data('ids',String(check_list));
+                    }
+                    else{
+                        $.alert({
+                            theme:'dark',
+                            title:'Atención',
+                            content:res.msg_response
+                        });
+                    }
+                },
+                error:function(){
+                    $.alert({
+                        theme:'dark',
+                        title:'Atención',
+                        content:'Ocurrió un error, favor de intentarlo de nuevo.'
+                    });
+                }
+            });
+        }
+        else{
+            $.alert({
+                theme:'dark',
+                title:'Atención',
+                content:'Debe seleccionar un usuario para editarlo.'
+            });
+        }
+    });
 
 });
 

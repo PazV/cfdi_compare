@@ -62,7 +62,14 @@ def saveCompany():
 
                 #editar empresa
                 else:
-                    edita
+                    db.query("""
+                        update system.company
+                        set name='%s',
+                        rfc='%s'
+                        where company_id=%s
+                    """%(data['name'].encode('utf-8'),data['rfc'].upper(),data['company_id']))
+                    response['success']=True
+                    response['msg_response']='Los datos de la empresa han sido actualizados.'
             else:
                 response['success']=False
                 response['msg_response']='Ocurrió un error al intentar validar la información capturada.'
@@ -209,7 +216,35 @@ def saveUser():
                     else:
                         response['success']=False
                         response['msg_response']='El correo ingresado ya se encuentra registrado.'
-                # else: #editar usuario
+                else:
+                    #editar usuario
+                    check_mail=db.query("""
+                        select count(*)
+                        from system.user
+                        where email='%s'
+                        and user_id<>%s
+                    """%(data['email'].lower().strip(),data['user_id'])).dictresult()
+                    if check_mail[0]['count']==0:
+                        db.query("""
+                            update system.user
+                            set name='%s',
+                            email='%s'
+                            where user_id=%s
+                        """%(data['name'],data['email'].lower().strip(),data['user_id']))
+                        db.query("""
+                            delete from system.user_company
+                            where user_id=%s
+                        """%data['user_id'])
+                        if user_data['companies']!='':
+                            companies=data['companies'].split(",")
+                            for x in companies:
+                                db.insert('system.user_company',{'user_id':data['user_id'],'company_id':x.split("_")[1],'added':'now()'})
+                        response['success']=True
+                        response['msg_response']='El usuario ha sido actualizado.'
+                    else:
+                        response['success']=False
+                        response['msg_response']='No es posible actualizar los datos, porque el correo ingresado ya se encuentra registrado.'
+
             else:
                 response['success']=False
                 response['msg_response']='Ocurrió un error al intentar validar la información.'
@@ -222,28 +257,114 @@ def saveUser():
         app.logger.info(traceback.format_exc(sys.exc_info()))
     return json.dumps(response)
 
-# @bp.route('/getAccountInfo', methods=['GET','POST'])
-# @is_logged_in
-# def getAccountInfo():
-#     response={}
-#     try:
-#         if request.method=='POST':
-#             valid,data=GF.getDict(request.form,'post')
-#             if valid:
-#                 name=db.query("""
-#                     select name from system.user where
-#                     user_id=%s
-#                 """%data['user_id']).dictresult()[0]['name']
-#                 response['success']=True
-#                 response['data']=name
-#             else:
-#                 response['success']=False
-#                 response['msg_response']='No es posible obtener los datos del usuario por el momento.'
-#         else:
-#             response['success']=False
-#             response['msg_response']='Ocurrió un error al intentar validar la información.'
-#     except:
-#         response['success']=False
-#         response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
-#         app.logger.info(traceback.format_exc(sys.exc_info()))
-#     return json.dumps(response)
+@bp.route('/changeMyAccount', methods=['GET','POST'])
+@is_logged_in
+def changeMyAccount():
+    response={}
+    try:
+        if request.method=='POST':
+            valid,data=GF.getDict(request.form,'post')
+            if valid:
+                check_password=db.query("""
+                    select * from system.user
+                    where user_id=%s
+                """%data['user_id']).dictresult()
+                if check_password!=[]:
+                    if check_password_hash(check_password[0]['password'],data['old_password']):
+                        new_password=generate_password_hash(data['new_password'].replace(" ",""))
+                        db.query("""
+                            update system.user
+                            set name='%s',
+                            password='%s'
+                            where user_id=%s
+                        """%(data['name'],new_password,data['user_id']))
+                        response['success']=True
+                        response['msg_response']='La contraseña ha sido actualizada.'
+                    else:
+                        response['success']=False
+                        response['msg_response']='La contraseña ingresada es incorrecta.'
+                else:
+                    response['success']=False
+                    response['msg_response']='Ocurrió un error al intentar obtener la información de este usuario.'
+            else:
+                response['success']=False
+                response['msg_response']='Ocurrió un error al intentar validar la información.'
+        else:
+            response['success']=False
+            response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+    except:
+        response['success']=False
+        response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
+        app.logger.info(traceback.format_exc(sys.exc_info()))
+    return json.dumps(response)
+
+@bp.route('/disableCompany', methods=['GET','POST'])
+@is_logged_in
+def disableCompany():
+    response={}
+    try:
+        if request.method=='POST':
+            valid,data=GF.getDict(request.form,'post')
+            if valid:
+                check_company=db.query("""
+                    select count(*)
+                    from system.company_cfdi_my_rel
+                    where company_id=%s
+                """%data['company_id']).dictresult()
+                check_sat=db.query("""
+                    select count(*)
+                    from system.sat_cfdi_my_rel
+                    where company_id=%s
+                """%data['company_id']).dictresult()
+                if check_company[0]['count']==0 and check_sat[0]['count']==0:
+                    db.query("""
+                        update system.company
+                        set enabled=False
+                        where company_id=%s
+                    """%data['company_id'])
+                    response['success']=True
+                    response['msg_response']='La empresa ha sido deshabilitada.'
+                else:
+                    response['success']=False
+                    response['msg_response']='La empresa no puede ser deshabilitada porque ya existen registros asociados a esta empresa.'
+            else:
+                response['success']=False
+                response['msg_response']='Ocurrió un error al intentar validar la información.'
+        else:
+            response['success']=False
+            response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+    except:
+        response['success']=False
+        response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
+        app.logger.info(traceback.format_exc(sys.exc_info()))
+    return json.dumps(response)
+
+@bp.route('/getUserCompanies', methods=['GET','POST'])
+@is_logged_in
+def getUserCompanies():
+    response={}
+    try:
+        if request.method=='POST':
+            valid,data=GF.getDict(request.form,'post')
+            if valid:
+                companies=db.query("""
+                    select a.company_id,
+                    b.name
+                    from system.company b,
+                    system.user_company a
+                    where a.company_id=b.company_id
+                    and a.user_id=%s
+                """%data['user_id']).dictresult()
+                response['success']=True
+                response['data']=companies
+            else:
+                response['success']=False
+                response['msg_response']='Ocurrió un error al intentar validar la información.'
+        else:
+            response['success']=False
+            response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo.'
+    except:
+        response['success']=False
+        response['msg_response']='Ocurrió un error, favor de intentarlo de nuevo más tarde.'
+        app.logger.info(traceback.format_exc(sys.exc_info()))
+    return json.dumps(response)
